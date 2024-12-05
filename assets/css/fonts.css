@@ -1,0 +1,44 @@
+@font-face {
+  font-family: fontHeader;
+  src: url("../fonts/header.ttf");
+}
+
+@font-face {
+  font-family: fontCalendarText;
+  src: url("../fonts/calendarText.ttf");
+}
+
+@font-face {
+  font-family: fontCalendarDay;
+  src: url("../fonts/calendarDay.ttf");
+}
+
+@font-face {
+  font-family: fontClock;
+  src: url("../fonts/clock.ttf");
+}
+
+@font-face {
+  font-family: fontBirthDayText;
+  src: url("../fonts/birthDayText.ttf");
+}
+
+@font-face {
+  font-family: fontBirthDayName;
+  src: url("../fonts/birthDayName.ttf");
+}
+
+@font-face {
+  font-family: fontContentText;
+  src: url("../fonts/contentText.ttf");
+}
+
+@font-face {
+  font-family: fontContentBirthdaysDate;
+  src: url("../fonts/contentBirthdaysDate.ttf");
+}
+
+@font-face {
+  font-family: fontContentBirthdaysName;
+  src: url("../fonts/contentBirthdaysName.ttf");
+}

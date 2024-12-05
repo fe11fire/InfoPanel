@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="node_modules/plyr/dist/plyr.css" rel="stylesheet">
+  <link href="node_modules/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="vendor/plyr/plyr.css" rel="stylesheet">
+  <link href="vendor/swiper/swiper-bundle.min.css" rel="stylesheet"> -->
+
+  <link href="assets/css/fonts.css" rel="stylesheet">
+  <link href="assets/css/common.css" rel="stylesheet">
+  <link href="assets/css/clock.css" rel="stylesheet">
+
+  <script type="text/javascript" src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="text/javascript" src="node_modules/plyr/dist/plyr.polyfilled.js"></script>
+  <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+  <script type="text/javascript" src="node_modules/swiper/swiper-bundle.min.js"></script>
+  <script type="text/javascript" src="node_modules/moment/moment.js"></script>
+  <script type="text/javascript" src="node_modules/moment/locale/ru.js"></script>
+
+  <!-- <script type="text/javascript" src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script type="text/javascript" src="vendor/plyr/plyr.polyfilled.js"></script>
+  <script type="text/javascript" src="vendor/jquery-3.7.0.min.js"></script>
+  <script type="text/javascript" src="vendor/swiper/swiper-bundle.min.js"></script>
+  <script type="text/javascript" src="vendor/momentjs/moment.js"></script>
+  <script type="text/javascript" src="vendor/momentjs/ru.js"></script> -->
+
+  <title>InfoPanel</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+  <div class="container-fluid h-100">
+
+    <canvas class="w-100 h-100 position-absolute d-none" id="canvas"></canvas>
+
+    <div class="row align-items-center h-100" id="div_row_screensaver">
+      <div class="col-10 mx-auto">
+        <div class="row">
+          <div class="clock mx-auto">
+            <div class="hour">
+              <div class="hr" id="hr"></div>
+            </div>
+            <div class="min">
+              <div class="mn" id="mn"></div>
+            </div>
+            <div class="sec">
+              <div class="sc" id="sc"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row h-100 d-none" id="div_row_content">
+      <div class="col-10 order-2 py-0" id="div_col_content">
+        <div class="row" id="div_header">
+          <div class="col">
+            <b>
+              <p class="text-center p-0 m-0"></p>
+            </b>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col" id="div_content_area">
+          </div>
+        </div>
+      </div>
+      <div class="col-2 order-1 d-flex flex-column justify-content-between py-0 overflow-y-hidden" id="div_col_info">
+        <div class="row">
+          <div class="col-12 mx-auto" id="div_logo">
+            <div class="row">
+              <img src="assets/imgs/logo.png.example" class="mx-auto" alt="">
+            </div>
+          </div>
+        </div>
+        <div class="row" id="div_calendar">
+          <div class="col-11 mx-auto">
+            <div class="row">
+              <div class="div_calendar_day">
+                <p class="text-center p-0 m-0"><span class="p_calendar_day"></span><br><span
+                    class="p_calendar_month"></span><br><span class="p_calendar_weekday"></span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row" id="div_clock">
+          <div class="col-11 mx-auto">
+            <div class="digitclock row">
+              <p class="text-center m-0 p-0"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="fixed-bottom div_line is-show p-0" id="div_info_line">
+        <div class="row h-100 align-items-center div_line is-show" id="div_row_info_line">
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+
+<script>
+  var player;
+  var swiper;
+</script>
+<script type="text/javascript" src="assets/js/clock.js"></script>
+<script type="text/javascript" src="assets/js/content/video.js"></script>
+<script type="text/javascript" src="assets/js/content/present.js"></script>
+<script type="text/javascript" src="assets/js/content/img.js"></script>
+<script type="text/javascript" src="assets/js/content/text.js"></script>
+<script type="text/javascript" src="assets/js/content/birthdays.js"></script>
+<script type="text/javascript" src="assets/js/lines/birthday.js"></script>
+<script type="text/javascript" src="assets/js/library.js"></script>
+<script type="text/javascript" src="assets/js/request.js"></script>
+<script type="text/javascript" src="assets/js/config.js"></script>
+<script type="text/javascript" src="assets/js/router.js"></script>
+<script type="text/javascript" src="assets/js/lines.js"></script>
+<script type="text/javascript" src="assets/js/matrix.js"></script>
+<script>
+  $('body').css('height', $(window).height() + 'px');
+
+  var config = new Config();
+
+  config.updateConfig().then(function () {
+    Router.initContent();
+    Lines.initContent();
+    if (config.getByName('matrix_enable')) {
+      config.getMatrix().screenSaveFunc(randomManage, config.getByName('start_timeOut'));
+    } else {
+      setTimeout(randomManage, config.getByName('start_timeOut'));
+    }
+    setTimeout(nextLine, config.getByName('start_timeOut'));
+    setTimeout(hideScreensaver, config.getByName('start_timeOut'));
+  });
+
+
+  function randomManage() {
+    Router.nextJob();
+  }
+
+  function nextLine() {
+    Lines.nextLine();
+  }
+
+  function hideScreensaver() {
+    $('#div_row_screensaver').addClass('d-none');
+    $('#div_row_content').removeClass('d-none');
+  }
+
+</script>

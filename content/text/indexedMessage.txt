@@ -1,0 +1,3 @@
+﻿Attention!
+This is test message
+indexed by InfoPanel

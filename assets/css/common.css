@@ -1,0 +1,199 @@
+:root {
+  --background_color: #fff;
+  --cursor: "none";
+  --padding_top: "30px";
+  --padding_bottom: "30px";
+  --padding_left: "10px";
+  --padding_right: "10px";
+  --info_line_background_color: #fff;
+  --info_line_height: 150px;
+  --header_height: 50px;
+  --header_font_size: 20px;
+  --header_color: #fff;
+  --content_text_color: #fff;
+  --content_text_background_color: #08184f;
+  --content_birthdays_date_color: #ff0;
+  --content_birthdays_date_prev_color: #f00;
+  --content_birthdays_name_color: #fff;
+  --content_birthdays_date_today_color: #f00;
+  --content_birthdays_name_today_color: #f00;
+  --logo_width: 100px;
+  --calendar_color: #fff;
+  --calendar_day_font_size: 50px;
+  --calendar_text_font_size: 20px;
+  --clock_color: #fff;
+  --clock_size: 50px;
+  --clock_colon_width: 15px;
+  --birthday_name_font_size: 30px;
+  --birthday_text_font_size: 18px;
+  --birthday_color: #fff;
+}
+
+body {
+  background: var(--background_color);
+  overflow: hidden;
+  cursor: var(--cursor);
+  padding-top: var(--padding_top);
+  padding-bottom: var(--padding_bottom);
+  padding-left: var(--padding_left);
+  padding-right: var(--padding_right);
+}
+
+#div_header {
+  height: var(--header_height);
+  font-size: var(--header_font_size);
+  color: var(--header_color);
+  font-family: fontHeader;
+}
+
+#div_logo img {
+  width: var(--logo_width);
+}
+
+.p_calendar_day {
+  font-size: var(--calendar_day_font_size);
+  font-family: fontCalendarDay;
+  font-weight: bold;
+  line-height: 1.2;
+  color: var(--calendar_color);
+}
+
+.p_calendar_month,
+.p_calendar_weekday {
+  font-size: var(--calendar_text_font_size);
+  font-family: fontCalendarText;
+  font-weight: bold;
+  line-height: 1;
+  color: var(--calendar_color);
+}
+
+.p_calendar_weekday {
+  line-height: 1.8;
+}
+
+#div_clock p {
+  font-size: var(--clock_size);
+  font-family: fontClock;
+  color: var(--clock_color);
+  line-height: 1;
+}
+
+.digitclock_colon {
+  display: inline-block;
+  width: var(--clock_colon_width);
+}
+
+#div_info_line {
+  background: var(--info_line_background_color);
+  height: var(--info_line_height);
+  padding-bottom: var(--padding_bottom);
+  bottom: 0px;
+}
+
+#div_col_content,
+#div_col_info,
+#div_header {
+  overflow: hidden;
+}
+
+.div_line {
+  transform: translateY(var(--info_line_height));
+  transition: transform 1500ms ease 0ms;
+}
+
+.div_line.is-show {
+  transform: translateY(0);
+  transition: transform 1500ms ease 0ms;
+}
+
+#div_birthday p {
+  font-size: var(--birthday_text_font_size);
+  color: var(--birthday_color);
+  font-family: fontBirthDayText;
+}
+
+.span_birthday_name {
+  font-family: fontBirthDayName;
+  font-size: var(--birthday_name_font_size);
+}
+
+canvas {
+  opacity: 0;
+  transition: opacity 1.5s linear;
+  z-index: 10000;
+  top: 0px;
+  left: 0px;
+}
+
+canvas.is-show {
+  opacity: 1;
+}
+
+#div_present .swiper-slide,
+#div_img {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+#div_present_title {
+  bottom: 0px;
+  background: linear-gradient(
+    0deg,
+    rgba(8, 24, 79, 1) 0%,
+    rgba(8, 24, 79, 0) 100%
+  );
+  z-index: 1;
+}
+
+#div_present_title p {
+  font-size: 24px;
+  line-height: 1.1;
+  color: #fff;
+  text-shadow: -2px -2px 0 black, 2px -2px 0 black, -2px 2px 0 black,
+    2px 2px 0 black;
+}
+
+#div_text {
+  background: var(--content_text_background_color);
+  color: var(--content_text_color);
+  font-family: fontContentText;
+  line-height: 1.2;
+}
+
+.content_birthdays_date {
+  color: var(--content_birthdays_date_color);
+  font-family: fontContentBirthdaysDate;
+}
+
+.content_birthdays_name {
+  color: var(--content_birthdays_name_color);
+  font-family: fontContentBirthdaysName;
+  text-shadow: -2px -2px 0 black, 2px -2px 0 black, -2px 2px 0 black,
+    2px 2px 0 black;
+}
+
+.content_birthdays_date .prev {
+  color: var(--content_birthdays_date_prev_color);
+}
+
+.content_birthdays_date .today {
+  color: var(--content_birthdays_date_today_color) !important;
+  font-weight: bold;
+}
+
+.content_birthdays_name .today {
+  color: var(--content_birthdays_name_today_color) !important;
+  font-weight: bold;
+}
+
+.cursor_pointer {
+  cursor: pointer;
+}
+
+.plyr {
+  height: 100%;
+}
+.plyr__video-wrapper {
+  background: var(--background_color) !important;
+}
