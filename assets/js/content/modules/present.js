@@ -41,9 +41,6 @@ class Present {
                         )
                 )
         );
-
-        // <div class="swiper">
-        // <div class="swiper-wrapper"></div>
     }
 
     async show() {
@@ -56,43 +53,41 @@ class Present {
             $('<div></div>')
                 .addClass('swiper-wrapper')
         );
-        // debugger;
 
         let swiper_config = {
             autoplay: {
-                delay: config.getByName('swiper_interval'),
+                delay: config.getByName('content_present_interval'),
             },
             on: {
                 reachBeginning: function () {
-                    // debugger;
                     swiper.destroy(false, true);
                     $('.swiper-wrapper').remove();
                     $('#div_present').addClass('d-none');
-                    Router.nextJob();
+                    ContentRouter.nextJob();
                 },
             },
         }
 
-        switch (Library.randomIntFromInterval(1, 4)) {
+        switch (Library.randomIntFromInterval(1, 3)) {
             case 1:
                 swiper_config['effect'] = 'flip';
                 break;
             case 2:
-                swiper_config['effect'] = 'cards';
-                swiper_config['cardsEffect'] = {
-                    shadow: false,
-                    slideShadows: false,
-                };
-                break;
-            case 3:
                 swiper_config['effect'] = 'cube';
                 swiper_config['cubeEffect'] = {
                     'shadow': false
                 };
                 break;
-            case 4:
+            case 3:
                 swiper_config['effect'] = 'fade';
                 break;
+            // case 4:
+            //     swiper_config['effect'] = 'cards';
+            //     swiper_config['cardsEffect'] = {
+            //         shadow: false,
+            //         slideShadows: false,
+            //     };
+            //     break;
             default:
                 break;
         }
@@ -102,7 +97,6 @@ class Present {
 
         let index = 1;
         imgs.forEach(i => {
-            // if (i != 'title.txt') {
             swiper.addSlide(index, '<div class="swiper-slide" style="background-image: url(\'' + this.#folder + this.#name + '/' + i + '\')"></div>')
             index++;
         });
@@ -117,16 +111,6 @@ class Present {
 
         swiper.update();
         swiper.autoplay.start();
-
-        // let shag = 3000;
-        // let dur = 0;
-        // imgs.forEach(i => {
-        //     setTimeout(() => {
-        //         $('#div_present').css('background-image', 'url(\'' + this.#folder + this.#name + '/' + i + '\')');
-        //     }, dur);
-        //     dur += shag;
-        // });
-        // setTimeout(() => { $('#div_present').addClass('d-none'); Router.nextJob() }, dur);
     }
 
     static async #findImages(folder, testData = undefined) {

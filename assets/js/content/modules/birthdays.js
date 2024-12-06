@@ -62,7 +62,7 @@ class Birthdays {
             )
         });
 
-        let size = config.getByName('birthdays_max_font_size');
+        let size = config.getByName('content_birthdays_max_font_size');
         let div = document.querySelectorAll("#div_birthdays")[0];
         div.style.lineHeight = '1.2';
         do {
@@ -77,7 +77,7 @@ class Birthdays {
             // debugger;
         } while ((div.clientHeight < div.scrollHeight) && lH > 12);
 
-        setTimeout(() => { $('#div_birthdays').html(''); $('#div_birthdays').addClass('d-none'); Router.nextJob() }, config.getByName('birthdays_interval'));
+        setTimeout(() => { $('#div_birthdays').html(''); $('#div_birthdays').addClass('d-none'); ContentRouter.nextJob() }, config.getByName('content_birthdays_interval'));
     }
 
     getBirthdays(data) {
@@ -96,7 +96,7 @@ class Birthdays {
 
         let i = 0;
         while (
-            (i < config.getByName('birthdays_next_count')) &&
+            (i < config.getByName('content_birthdays_next_count')) &&
             (i < data.length)
         ) {
             let date = data[i].moment.format('D MMMM');
@@ -111,7 +111,7 @@ class Birthdays {
 
         i = 0;
         while (
-            (i < config.getByName('birthdays_prev_count')) &&
+            (i < config.getByName('content_birthdays_prev_count')) &&
             (i < data.length)
         ) {
             out.unshift({ date: '<span class="prev">' + data[data.length - i - 1].moment.format('D MMMM') + '</span>', name: data[data.length - i - 1].fio });

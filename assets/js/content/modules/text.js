@@ -41,7 +41,7 @@ class Text {
 
 
 
-        setTimeout(() => { $('#div_text').addClass('d-none'); Router.nextJob() }, config.getByName('text_interval'));
+        setTimeout(() => { $('#div_text').addClass('d-none'); ContentRouter.nextJob() }, config.getByName('content_text_interval'));
     }
 
     static async #findMessage(name, testData = undefined) {

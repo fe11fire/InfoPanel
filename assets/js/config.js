@@ -16,15 +16,15 @@ class Config {
         config_update_interval: 20000,
         jobs_restart_timeOut: 10000,
         header_text: 'Название<br>организации',
-        swiper_interval: 2000,
+        content_present_interval: 10000,
+        content_img_interval: 10000,
+        content_text_interval: 10000,
+        content_birthdays_interval: 10000,
+        content_birthdays_next_count: 5,
+        content_birthdays_prev_count: 2,
+        content_birthdays_max_font_size: 24, // пиксели
         info_line_height: '40px',
         info_line_changing_interval: 15000,
-        img_interval: 10000,
-        text_interval: 10000,
-        birthdays_interval: 10000,
-        birthdays_next_count: 5,
-        birthdays_prev_count: 2,
-        birthdays_max_font_size: 24, // пиксели
     };
     #default_css = {
         cursor: 'default',
@@ -128,7 +128,7 @@ class Config {
         let h = $('body .container-fluid').height();
 
         let h_info = 0;
-        if (Lines.lines.length > 0) {
+        if (LineRouter.lines.length > 0) {
             h_info = config.getByName('info_line_height');
         }
         document.documentElement.style.setProperty("--info_line_height", h_info);

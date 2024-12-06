@@ -1,14 +1,14 @@
-class Lines {
+class LineRouter {
     static lines = [];
     static last_line;
     static round = 1;
     static #sources = [Birthday];
 
     static initContent() {
-        Lines.#sources.forEach(source => {
+        LineRouter.#sources.forEach(source => {
             source.initContent();
         });
-        Lines.updateLines();
+        LineRouter.updateLines();
     }
 
     static async #addLines(myClass, testData = undefined) {
@@ -30,26 +30,26 @@ class Lines {
         let currentLines = [];
         let lines = [];
 
-        for (let i = 0; i < Lines.#sources.length; i++) {
-            lines = lines.concat(await Lines.#addLines(Lines.#sources[i]));
+        for (let i = 0; i < LineRouter.#sources.length; i++) {
+            lines = lines.concat(await LineRouter.#addLines(LineRouter.#sources[i]));
         }
 
         lines.forEach(line => {
-            let index = Lines.lines.findIndex(function (e) {
+            let index = LineRouter.lines.findIndex(function (e) {
                 return e.h == line.h
             });
 
             if (index == -1) {
                 newLines.push(line);
             } else {
-                currentLines[index] = Lines.lines[index];
+                currentLines[index] = LineRouter.lines[index];
             }
         });
 
-        Lines.lines = newLines.concat(currentLines);
-        Lines.lines = Object.values(Lines.lines);
+        LineRouter.lines = newLines.concat(currentLines);
+        LineRouter.lines = Object.values(LineRouter.lines);
 
-        console.log(Lines.lines);
+        console.log(LineRouter.lines);
     }
 
     static async nextLine() {
@@ -62,16 +62,16 @@ class Lines {
         Config.updateElementsSize(config);
 
         let interval = config.getByName('info_line_changing_interval');
-        if (Lines.lines.length > 0) {
-            if ((Lines.lines.length > 1) || (Lines.last_line != Lines.lines[0])) {
-                Lines.lines[0].cl.show();
-                Lines.last_line = Lines.lines[0];
+        if (LineRouter.lines.length > 0) {
+            if ((LineRouter.lines.length > 1) || (LineRouter.last_line != LineRouter.lines[0])) {
+                LineRouter.lines[0].cl.show();
+                LineRouter.last_line = LineRouter.lines[0];
 
-                if (Lines.lines.length > 1) {
-                    Lines.lines.push(Lines.lines.shift());
+                if (LineRouter.lines.length > 1) {
+                    LineRouter.lines.push(LineRouter.lines.shift());
                     setTimeout(hideLine, interval - 2000);
                     setTimeout(() => {
-                        Lines.lines[0].cl.hide()
+                        LineRouter.lines[0].cl.hide()
                     }, interval);
                 }
             }

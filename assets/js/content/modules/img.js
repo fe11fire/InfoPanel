@@ -29,7 +29,7 @@ class Img {
         $('#div_img').css('background-image', 'url(\'' + this.#folder + this.#name + '\')');
         $('#div_img').removeClass('d-none');
 
-        setTimeout(() => { $('#div_img').addClass('d-none'); Router.nextJob() }, config.getByName('img_interval'));
+        setTimeout(() => { $('#div_img').addClass('d-none'); ContentRouter.nextJob() }, config.getByName('content_img_interval'));
     }
 
 
