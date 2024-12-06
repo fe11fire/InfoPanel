@@ -6,49 +6,6 @@ class Config {
     #i_side_changing;
     #t_update_interval;
 
-    //Все таймеры в милисекундах 3600000 - час, 72000000 - полдня
-    #default = {
-        matrix_enable: false, // Включение заставки Матрицы при смене экрана
-        matrix_duration: 2000, // Длительность заставки Матрицы при переходе
-        start_timeOut: 3000, //пауза перед показом контента, лучше чтобы была, так как идет асинхронная подгрузка очереди в процедурном стиле кода
-        side_changing: false,
-        side_changing_interval: 15000, // интервал смены сторон
-        config_update_interval: 20000,
-        jobs_restart_timeOut: 10000,
-        header_text: 'Название<br>организации',
-        content_present_interval: 10000,
-        content_img_interval: 10000,
-        content_text_interval: 10000,
-        content_birthdays_interval: 10000,
-        content_birthdays_next_count: 5,
-        content_birthdays_prev_count: 2,
-        content_birthdays_max_font_size: 24, // пиксели
-        info_line_height: '40px',
-        info_line_changing_interval: 15000,
-    };
-    #default_css = {
-        cursor: 'default',
-        background_color: '#08184f',
-        padding_top: '20px',
-        padding_bottom: '20px',
-        padding_left: '50px',
-        padding_right: '50px',
-        header_height: '80px',
-        header_font_size: '26px',
-        header_color: '#fff',
-        info_line_background_color: 'linear-gradient(#08184f, #9198e5)',
-        logo_width: '100px',
-        calendar_color: '#fff',
-        calendar_day_font_size: '75px',
-        calendar_text_font_size: '20px',
-        clock_color: '#fff',
-        clock_size: '50px',
-        clock_colon_width: '15px',
-        birthday_name_font_size: "30px",
-        birthday_text_font_size: "24px",
-        birthday_color: "#fff",
-    }
-
     constructor() {
         this.#exp = moment();
     }
@@ -71,11 +28,11 @@ class Config {
         if (this.isset(this.#data[name])) {
             return this.#data[name]
         }
-        if (this.isset(this.#default[name])) {
-            return this.#default[name]
+        if (this.isset(Default.system[name])) {
+            return Default.system[name]
         }
-        if (this.isset(this.#default_css[name])) {
-            return this.#default_css[name]
+        if (this.isset(Default.css[name])) {
+            return Default.css[name]
         }
         console.log('Config ' + name + ' not found');
         return null;
@@ -113,7 +70,7 @@ class Config {
         this.#t_update_interval = this.clearTimer(this.#t_update_interval);
         this.#t_update_interval = setInterval(() => { this.updateConfig() }, this.getByName('config_update_interval'));
 
-        Object.keys(this.#default_css).forEach(e => {
+        Object.keys(Default.css).forEach(e => {
             document.documentElement.style.setProperty("--" + e, this.getByName(e));
         });
 

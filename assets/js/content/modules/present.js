@@ -1,9 +1,9 @@
 class Present {
-    static url = 'http://localhost:8084/present';
+    static url = Default.backend_url + 'present';
     static request_data = {};
     static prehash = 'present';
 
-    #folder = 'content/present/';
+    #folder = Default.backend.path_present + '/';
     #name = '';
     constructor(name) {
         this.#name = name;

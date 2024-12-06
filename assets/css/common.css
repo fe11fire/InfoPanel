@@ -27,6 +27,7 @@
   --birthday_name_font_size: 30px;
   --birthday_text_font_size: 18px;
   --birthday_color: #fff;
+  --birthday_name_color: #f00;
 }
 
 body {
@@ -115,6 +116,8 @@ body {
 .span_birthday_name {
   font-family: fontBirthDayName;
   font-size: var(--birthday_name_font_size);
+  color: var(--birthday_name_color);
+  font-weight: bold;
 }
 
 canvas {

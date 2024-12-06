@@ -1,9 +1,9 @@
 class Img {
-    static url = 'http://localhost:8084/imgs';
+    static url = Default.backend_url + 'imgs';
     static request_data = {};
     static prehash = 'imgs';
 
-    #folder = 'content/imgs/';
+    #folder = Default.backend.path_images + '/';
     #name = '';
     constructor(name) {
         this.#name = name;

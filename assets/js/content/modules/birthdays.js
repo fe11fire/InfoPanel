@@ -1,9 +1,8 @@
 class Birthdays {
-    static url = 'http://localhost:8084/birthdays';
+    static url = Default.backend_url + 'birthdays';
     static request_data = {};
     static prehash = 'birthdays';
 
-    // #folder = 'content/video/';
     #name = '';
     constructor(name) {
         this.#name = name;
@@ -33,7 +32,7 @@ class Birthdays {
         //         .addClass('row')
         //         .append(
         //             $('<p></p>')
-        //                 .html('Ближайшие дни рождения')
+        //                 .html('Nearest birthdays')
         //                 .addClass('text-center')
         //         )
         // );

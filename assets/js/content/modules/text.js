@@ -1,9 +1,8 @@
 class Text {
-    static url = 'http://localhost:8084/text';
+    static url = Default.backend_url + 'text';
     static request_data = {};
     static prehash = 'text';
 
-    #folder = 'content/text/';
     #name = '';
     constructor(name) {
         this.#name = name;

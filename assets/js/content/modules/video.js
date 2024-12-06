@@ -1,10 +1,10 @@
 class Video {
-    static url = 'http://localhost:8084/video';
+    static url = Default.backend_url + 'video';
     static request_data = {};
     static prehash = 'video';
     static player;
 
-    #folder = 'content/video/';
+    #folder = Default.backend.path_video + '/';
     #name = '';
     constructor(name) {
         this.#name = name;
