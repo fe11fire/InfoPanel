@@ -52,7 +52,7 @@ class ContentRouter {
             ContentRouter.#shuffleJobs();
             $('body').css('height', $(window).height() + 'px');
         }
-        // console.log(ContentRouter.jobs);
+        console.log(ContentRouter.jobs);
     }
 
     static async nextJob() {

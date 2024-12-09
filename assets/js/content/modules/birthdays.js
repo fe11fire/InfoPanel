@@ -14,6 +14,9 @@ class Birthdays {
             Birthdays.request_data,
             testData
         );
+        if (!birthdays.result) {
+            return {};
+        }
         let data = { result: [[]] };
 
         if (birthdays.result) {

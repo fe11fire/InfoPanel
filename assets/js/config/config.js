@@ -1,10 +1,12 @@
 class Config {
+    static empty = true;
     #data;
     #m; //Матрица
     #exp; //Параметр для отладки. Время начала работы скрипта.
     #t_side_changing;
     #i_side_changing;
     #t_update_interval;
+
 
     constructor() {
         this.#exp = moment();
@@ -14,14 +16,21 @@ class Config {
         let data;
         try {
             data = await Request.getData(
-                'http://localhost:8084/config',
+                Default.backend_url + 'config',
             );
+            if (data.length == 0) {
+                Config.empty = true;
+                showScreensaver();
+            } else {
+                Config.empty = false;
+            }
         } catch (exceptionVar) {
-            data = {};
+            data = [];
+            Config.empty = true;
+            showScreensaver();
             console.log('empty config');
         }
         this.#data = data;
-        // console.log(this.#data);
     }
 
     getByName(name) {
@@ -43,7 +52,7 @@ class Config {
     }
 
     async updateConfig() {
-        console.log(moment().diff(this.#exp, 'seconds') + ' - updateConfig');
+        // console.log(moment().diff(this.#exp, 'seconds') + ' - updateConfig');
         await this.init();
 
         if (this.getByName('matrix_enable')) {

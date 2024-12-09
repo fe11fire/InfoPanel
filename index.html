@@ -10,10 +10,6 @@
   <link href="node_modules/plyr/dist/plyr.css" rel="stylesheet">
   <link href="node_modules/swiper/swiper-bundle.min.css" rel="stylesheet">
 
-  <!-- <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="vendor/plyr/plyr.css" rel="stylesheet">
-  <link href="vendor/swiper/swiper-bundle.min.css" rel="stylesheet"> -->
-
   <link href="assets/css/fonts.css" rel="stylesheet">
   <link href="assets/css/common.css" rel="stylesheet">
   <link href="assets/css/clock.css" rel="stylesheet">
@@ -24,13 +20,6 @@
   <script type="text/javascript" src="node_modules/swiper/swiper-bundle.min.js"></script>
   <script type="text/javascript" src="node_modules/moment/moment.js"></script>
   <script type="text/javascript" src="node_modules/moment/locale/ru.js"></script>
-
-  <!-- <script type="text/javascript" src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script type="text/javascript" src="vendor/plyr/plyr.polyfilled.js"></script>
-  <script type="text/javascript" src="vendor/jquery-3.7.0.min.js"></script>
-  <script type="text/javascript" src="vendor/swiper/swiper-bundle.min.js"></script>
-  <script type="text/javascript" src="vendor/momentjs/moment.js"></script>
-  <script type="text/javascript" src="vendor/momentjs/ru.js"></script> -->
 
   <title>InfoPanel</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -155,8 +144,26 @@
   }
 
   function hideScreensaver() {
+    if (
+      (
+        (ContentRouter.jobs.length == 0) &&
+        (LineRouter.lines.length == 0)
+      ) ||
+      (Config.empty == true)
+    ) {
+      setTimeout(hideScreensaver, config.getByName('start_timeOut'));
+      return;
+    }
     $('#div_row_screensaver').addClass('d-none');
     $('#div_row_content').removeClass('d-none');
+  }
+
+  function showScreensaver() {
+    if ($('#div_row_screensaver').hasClass('d-none')) {
+      $('#div_row_screensaver').removeClass('d-none');
+      $('#div_row_content').addClass('d-none');
+      setTimeout(hideScreensaver, config.getByName('start_timeOut'));
+    }
   }
 
 </script>
