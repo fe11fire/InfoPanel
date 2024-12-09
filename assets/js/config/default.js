@@ -50,7 +50,6 @@ class Default {
         calendar_text_font_size: '20px',
         clock_color: '#fff',
         clock_size: '50px',
-        clock_colon_width: '15px',
         birthday_name_font_size: "30px",
         birthday_text_font_size: "24px",
         birthday_color: "#fff",

@@ -16,7 +16,6 @@
     "padding_right": "50px",
     "calendar_day_font_size": "105px",
     "calendar_text_font_size": "35px",
-    "clock_colon_width": "20px",
     "info_line_height": "80px",
     "info_line_changing_interval": 10000,
     "birthday_name_font_size": "30px",

@@ -23,7 +23,6 @@
   --calendar_text_font_size: 20px;
   --clock_color: #fff;
   --clock_size: 50px;
-  --clock_colon_width: 15px;
   --birthday_name_font_size: 30px;
   --birthday_text_font_size: 18px;
   --birthday_color: #fff;
@@ -81,7 +80,8 @@ body {
 
 .digitclock_colon {
   display: inline-block;
-  width: var(--clock_colon_width);
+  width: calc(var(--clock_size) * 0.6);
+  padding-left: calc(var(--clock_size) / 6);
 }
 
 #div_info_line {
