@@ -54,107 +54,77 @@
 
 - `backend_url\video` - получение имен файлов каталога `path_video` (имена каталогов игнорируются). 
 
-   Примеры response:
+   Пример response:
 
    ```
    {"result":["video1.mp4","video2.mp4"]}
    ```
-   ```
-   {"result":[]}
-   ```
 - `backend_url\img` - получение имен файлов каталога `path_img` (имена каталогов игнорируются). 
 
-   Примеры response:
+   Пример response:
 
    ```
    {"result":["picture1.jpg","picture2.jpg"]}
    ```
-   ```
-   {"result":[]}
-   ```
 - `backend_url\text` - получение имен файлов каталога `path_text` (имена каталогов игнорируются). 
 
-   Примеры response:
+   Пример response:
 
    ```
    {"result":["message1.txt","message2.txt"]}
    ```
-   ```
-   {"result":[]}
-   ```
   - `backend_url\text?name=fileName` - получение содержимого текстового файла `fileName` из каталога `path_text` построчно. 
 
-      Примеры response:
+      Пример response:
    
       ```
       {"result":["line1","line2"]}
       ```
-      ```
-      {"result":[]}
-      ```
 - `backend_url\present` - получение имен каталогов из каталога `path_present` (имена файлов игнорируются). 
 
-   Примеры response:
+   Пример response:
 
    ```
    {"result":["present1","present2"]}
    ```
-   ```
-   {"result":[]}
-   ```
   - `backend_url\present?path=pathName` - получение имен файлов каталога `path_present\pathName` кроме `title.txt`. 
 
-      Примеры response:
+      Пример response:
    
       ```
       {"result":["picture1","picture2"]}
       ```
-      ```
-      {"result":[]}
-      ```
   - `backend_url\present?path=pathName&title=true` - получение содержимого текстового файла `path_present\pathName\title.txt` построчно. 
 
-      Примеры response:
+      Пример response:
    
       ```
       {"result":["title line 1","title line 2"]}
       ```
-      ```
-      {"result":[]}
-      ```
 - `backend_url\birthdays` - получение содержимого текстового файла `path_birthday\file_birthday` построчно. 
 
-   Примеры response:
+   Пример response:
 
    ```
    {"result":["﻿12.10:Ronald Montgomery","12.10:Jane Cooper","21.11:Stacy Adams"]}
    ```
-   ```
-   {"result":[]}
-   ```
 - `backend_url\birthday?day=dayNumber&month=monthNumber` - получение имен только из тех строк, которые соответствуют маске `dayNumber.monthNumber` текстового файла `path_birthday\file_birthday`. 
 
-   Примеры response:
+   Пример response:
 
    ```
    {"result":["Ronald Montgomery","Jane Cooper"]}
    ```
-   ```
-   {"result":[]}
-   ```
 - `backend_url\holiday?day=dayNumber&month=monthNumber` - получение имен только из тех строк, которые соответствуют маске `dayNumber.monthNumber` текстового файла `path_holiday\file_holiday`. 
 
-   Примеры response:
+   Пример response:
 
    ```
    {"result":["New Year"]}
    ```
-   ```
-   {"result":[]}
-   ```
 - `backend_url\config` - получение содержимого текстового файла `backend\config.json` построчно. 
 
-   Примеры response:
+   Пример response:
 
    ```
    {
