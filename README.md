@@ -53,7 +53,8 @@
 Спецификация POST-запросов:
 
 `backend_url\video` - запрос наименований файлов (каталоги игнорируются) каталога _path_video_
-response
+
+response:
 
 ```
 {"result":["video1.mp4","video2.mp4"]}
