@@ -46,20 +46,122 @@
 
 # Взаимодействие с backend
 
-Для первичной инициализации сервера данных используются свойства объекта `backend` в `js\config\default.js`: _server_ip_, _server_port_ (`backend_url`).
+Для первичной инициализации сервера данных используются свойства `server_ip`, `server_port` объекта `backend` в `assets\js\config\default.js`, из которых составляется `backend_url`.
 
 Алгоритм взаимодействия подразумевает получение данных в json-формате. В случае отсутствия ответа либо некорректного формата входных данных применяется пустое значение, то есть отсутствие информации для соответствующего запроса.
 
 Спецификация POST-запросов:
 
-`backend_url\video` - запрос наименований файлов (каталоги игнорируются) каталога _path_video_
+- `backend_url\video` - получение имен файлов каталога `path_video` (имена каталогов игнорируются). 
 
-response:
+   Примеры response:
 
-```
-{"result":["video1.mp4","video2.mp4"]}
-{"result":[]}
-```
+   ```
+   {"result":["video1.mp4","video2.mp4"]}
+   ```
+   ```
+   {"result":[]}
+   ```
+- `backend_url\img` - получение имен файлов каталога `path_img` (имена каталогов игнорируются). 
+
+   Примеры response:
+
+   ```
+   {"result":["picture1.jpg","picture2.jpg"]}
+   ```
+   ```
+   {"result":[]}
+   ```
+- `backend_url\text` - получение имен файлов каталога `path_text` (имена каталогов игнорируются). 
+
+   Примеры response:
+
+   ```
+   {"result":["message1.txt","message2.txt"]}
+   ```
+   ```
+   {"result":[]}
+   ```
+  - `backend_url\text?name=fileName` - получение содержимого текстового файла `fileName` из каталога `path_text` построчно. 
+
+      Примеры response:
+   
+      ```
+      {"result":["line1","line2"]}
+      ```
+      ```
+      {"result":[]}
+      ```
+- `backend_url\present` - получение имен каталогов из каталога `path_present` (имена файлов игнорируются). 
+
+   Примеры response:
+
+   ```
+   {"result":["present1","present2"]}
+   ```
+   ```
+   {"result":[]}
+   ```
+  - `backend_url\present?path=pathName` - получение имен файлов каталога `path_present\pathName` кроме `title.txt`. 
+
+      Примеры response:
+   
+      ```
+      {"result":["picture1","picture2"]}
+      ```
+      ```
+      {"result":[]}
+      ```
+  - `backend_url\present?path=pathName&title=true` - получение содержимого текстового файла `path_present\pathName\title.txt` построчно. 
+
+      Примеры response:
+   
+      ```
+      {"result":["title line 1","title line 2"]}
+      ```
+      ```
+      {"result":[]}
+      ```
+- `backend_url\birthdays` - получение содержимого текстового файла `path_birthday\file_birthday` построчно. 
+
+   Примеры response:
+
+   ```
+   {"result":["﻿12.10:Ronald Montgomery","12.10:Jane Cooper","21.11:Stacy Adams"]}
+   ```
+   ```
+   {"result":[]}
+   ```
+- `backend_url\birthday?day=dayNumber&month=monthNumber` - получение имен только из тех строк, которые соответствуют маске `dayNumber.monthNumber` текстового файла `path_birthday\file_birthday`. 
+
+   Примеры response:
+
+   ```
+   {"result":["Ronald Montgomery","Jane Cooper"]}
+   ```
+   ```
+   {"result":[]}
+   ```
+- `backend_url\holiday?day=dayNumber&month=monthNumber` - получение имен только из тех строк, которые соответствуют маске `dayNumber.monthNumber` текстового файла `path_holiday\file_holiday`. 
+
+   Примеры response:
+
+   ```
+   {"result":["New Year"]}
+   ```
+   ```
+   {"result":[]}
+   ```
+- `backend_url\config` - получение содержимого текстового файла `backend\config.json` построчно. 
+
+   Примеры response:
+
+   ```
+   {
+    "server_ip": "127.0.0.1",
+    "server_port": 8084,
+   }
+   ```
 
 # Настройка браузера в Windows для работы с приложением в качестве информационной панели
 
