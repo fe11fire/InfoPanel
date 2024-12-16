@@ -106,7 +106,7 @@
    Пример response:
 
    ```
-   {"result":["﻿12.10:Ronald Montgomery","12.10:Jane Cooper","21.11:Stacy Adams"]}
+   {"result":["12.10:Ronald Montgomery","12.10:Jane Cooper","21.11:Stacy Adams"]}
    ```
 - `backend_url\birthday?day=dayNumber&month=monthNumber` - получение имен только из тех строк, которые соответствуют маске `dayNumber.monthNumber` текстового файла `path_birthday\file_birthday`. 
 

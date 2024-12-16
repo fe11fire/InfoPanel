@@ -1,7 +1,6 @@
 class Birthday {
-    static url = 'http://localhost:8084/birthday';
+    static url = Default.backend_url + 'birthday';
     static request_data = { "day": moment().format('D').toString(), "month": moment().format('M').toString() };
-    // static request_data = {};
     static prehash = 'birthday';
 
     #name = '';
@@ -32,7 +31,7 @@ class Birthday {
                 .css('background-image', 'url("assets/imgs/celebration.png")')
                 .css('background-repeat', 'repeat')
                 .css('background-size', 'auto')
-                .addClass('col h-100 w-100')
+                .addClass('col h-100 w-100 d-none')
                 .append(
                     $('<div></div>')
                         .addClass('row align-items-center h-100')

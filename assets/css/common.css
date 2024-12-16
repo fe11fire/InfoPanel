@@ -107,13 +107,15 @@ body {
   transition: transform 1500ms ease 0ms;
 }
 
-#div_birthday p {
+#div_birthday p,
+#div_holiday p {
   font-size: var(--birthday_text_font_size);
   color: var(--birthday_color);
   font-family: fontBirthDayText;
 }
 
-.span_birthday_name {
+.span_birthday_name,
+.span_holiday_name {
   font-family: fontBirthDayName;
   font-size: var(--birthday_name_font_size);
   color: var(--birthday_name_color);
