@@ -35,7 +35,7 @@ class LineRouter {
             lines = lines.concat(await LineRouter.#addLines(LineRouter.#sources[i]));
         }
 
-        lines = lines.concat(await LineRouter.#addLines(Holiday, ['New year', 'Halloween']));
+        // lines = lines.concat(await LineRouter.#addLines(Holiday, ['New year', 'Halloween']));
 
         lines.forEach(line => {
             let index = LineRouter.lines.findIndex(function (e) {
