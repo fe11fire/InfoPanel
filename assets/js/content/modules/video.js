@@ -4,7 +4,7 @@ class Video {
     static prehash = 'video';
     static player;
 
-    #folder = Default.backend.path_video + '/';
+    #folder = Default.paths.path_video + '/';
     #name = '';
     constructor(name) {
         this.#name = name;
