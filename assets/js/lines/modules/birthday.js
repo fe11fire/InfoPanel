@@ -1,6 +1,6 @@
 class Birthday {
     static url = Default.backend_url + 'birthday';
-    static request_data = { "day": moment().format('D').toString(), "month": moment().format('M').toString() };
+
     static prehash = 'birthday';
 
     #name = '';
@@ -8,10 +8,14 @@ class Birthday {
         this.#name = name;
     }
 
+    static request_data() {
+        return { "day": moment().format('D').toString(), "month": moment().format('M').toString() };
+    }
+
     static async getData(testData) {
         return await Request.getData(
             Birthday.url,
-            Birthday.request_data,
+            Birthday.request_data(),
             testData
         );
     }
