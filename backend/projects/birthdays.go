@@ -43,7 +43,7 @@ func GetBirthdayHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	currentDir, err := os.Getwd()
-	birthdayFile, err := os.ReadFile(currentDir + "\\" + Conf.PathBirthday + "\\" + "birthday.txt")
+	birthdayFile, err := os.ReadFile(currentDir + "\\" + Conf.PathBirthday + "\\" + Conf.FileBirthday)
 	if err != nil {
 		fmt.Println("cant open birthday.txt: ", err.Error())
 		return
