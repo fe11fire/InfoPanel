@@ -2,10 +2,15 @@ class Default {
     static backend = {
         server_ip: "127.0.0.1",
         server_port: 8084,
+    }
+
+    static paths = {
         path_video: "content/video",
         path_present: "content/present",
         path_birthday: "content/birthday",
         file_birthday: "birthday.txt",
+        path_holiday: "content/holiday",
+        file_holiday: "holiday.txt",
         path_text: "content/text",
         path_images: "content/imgs",
     }

@@ -3,7 +3,7 @@ class Present {
     static request_data = {};
     static prehash = 'present';
 
-    #folder = Default.backend.path_present + '/';
+    #folder = Default.paths.path_present + '/';
     #name = '';
     constructor(name) {
         this.#name = name;

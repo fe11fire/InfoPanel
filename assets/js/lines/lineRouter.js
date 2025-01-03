@@ -2,7 +2,8 @@ class LineRouter {
     static lines = [];
     static last_line;
     static round = 1;
-    static #sources = [Birthday];
+    // static #sources = [Birthday];
+    static #sources = [Birthday, Holiday];
 
     static initContent() {
         LineRouter.#sources.forEach(source => {
@@ -34,6 +35,8 @@ class LineRouter {
             lines = lines.concat(await LineRouter.#addLines(LineRouter.#sources[i]));
         }
 
+        // lines = lines.concat(await LineRouter.#addLines(Holiday, ['New year', 'Halloween']));
+
         lines.forEach(line => {
             let index = LineRouter.lines.findIndex(function (e) {
                 return e.h == line.h
@@ -48,11 +51,17 @@ class LineRouter {
 
         LineRouter.lines = newLines.concat(currentLines);
         LineRouter.lines = Object.values(LineRouter.lines);
+
+        console.log(LineRouter.lines);
     }
 
     static async nextLine() {
-        function hideLine() {
+        function hideLine(cl) {
             $('#div_row_info_line').removeClass('is-show');
+            setTimeout(() => {
+                cl.hide();
+            }, 2000);
+
         }
 
         await this.updateLines();
@@ -60,17 +69,14 @@ class LineRouter {
         Config.updateElementsSize(config);
 
         let interval = config.getByName('info_line_changing_interval');
+
         if (LineRouter.lines.length > 0) {
             if ((LineRouter.lines.length > 1) || (LineRouter.last_line != LineRouter.lines[0])) {
                 LineRouter.lines[0].cl.show();
                 LineRouter.last_line = LineRouter.lines[0];
-
                 if (LineRouter.lines.length > 1) {
+                    setTimeout(hideLine, interval - 2000, LineRouter.lines[0].cl);
                     LineRouter.lines.push(LineRouter.lines.shift());
-                    setTimeout(hideLine, interval - 2000);
-                    setTimeout(() => {
-                        LineRouter.lines[0].cl.hide()
-                    }, interval);
                 }
             }
         }

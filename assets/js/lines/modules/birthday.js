@@ -1,7 +1,6 @@
 class Birthday {
-    static url = 'http://localhost:8084/birthday';
-    static request_data = { "day": moment().format('D').toString(), "month": moment().format('M').toString() };
-    // static request_data = {};
+    static url = Default.backend_url + 'birthday';
+
     static prehash = 'birthday';
 
     #name = '';
@@ -9,10 +8,14 @@ class Birthday {
         this.#name = name;
     }
 
+    static request_data() {
+        return { "day": moment().format('D').toString(), "month": moment().format('M').toString() };
+    }
+
     static async getData(testData) {
         return await Request.getData(
             Birthday.url,
-            Birthday.request_data,
+            Birthday.request_data(),
             testData
         );
     }
@@ -32,7 +35,7 @@ class Birthday {
                 .css('background-image', 'url("assets/imgs/celebration.png")')
                 .css('background-repeat', 'repeat')
                 .css('background-size', 'auto')
-                .addClass('col h-100 w-100')
+                .addClass('col h-100 w-100 d-none')
                 .append(
                     $('<div></div>')
                         .addClass('row align-items-center h-100')
