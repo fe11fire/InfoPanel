@@ -10,6 +10,10 @@ import (
 
 func GetFilenamesHandler(w http.ResponseWriter, r *http.Request) {
 	currentDir, err := os.Getwd()
+	if err != nil {
+		fmt.Println("cant get current dir: ", err.Error())
+		return
+	}
 	files, err := os.ReadDir(currentDir + "\\" + Conf.FilePath)
 	fmt.Println("Working directory: " + currentDir + "\\" + Conf.FilePath)
 	if err != nil {
@@ -22,7 +26,7 @@ func GetFilenamesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	filenames2 := make([]string, 0)
 	for _, f := range files {
-		if f.IsDir() == false {
+		if !f.IsDir() {
 			fullName := f.Name()
 			filenames2 = append(filenames2, fullName)
 		}

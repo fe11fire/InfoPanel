@@ -43,11 +43,17 @@ func GetBirthdayHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	currentDir, err := os.Getwd()
-	birthdayFile, err := os.ReadFile(currentDir + "\\" + Conf.PathBirthday + "\\" + "birthday.txt")
+	if err != nil {
+		fmt.Println("cant get current dir: ", err.Error())
+		return
+	}
+	path := currentDir + "\\" + Conf.PathBirthday + "\\" + Conf.FileBirthday
+	birthdayFile, err := os.ReadFile(path)
 	if err != nil {
 		fmt.Println("cant open birthday.txt: ", err.Error())
 		return
 	}
+	fmt.Println("Path: " + path)
 	fios := make([]string, 0, 10)
 	birthdayLines := strings.Split(string(birthdayFile), "\n")
 	//	fmt.Println(birthdayLines)
@@ -77,12 +83,17 @@ type Element struct {
 
 func GetBirthdaysHandler(w http.ResponseWriter, r *http.Request) {
 	currentDir, err := os.Getwd()
-	birthdayFile, err := os.ReadFile(currentDir + "\\" + Conf.PathBirthday + "\\" + Conf.FileBirthday)
+	if err != nil {
+		fmt.Println("cant get current dir: ", err.Error())
+		return
+	}
+	path := currentDir + "\\" + Conf.PathBirthday + "\\" + Conf.FileBirthday
+	birthdayFile, err := os.ReadFile(path)
 	if err != nil {
 		fmt.Println("cant open birthday.txt: ", err.Error())
 		return
 	}
-	fmt.Println(currentDir + "\\" + Conf.PathBirthday + Conf.FileBirthday)
+	fmt.Println("Path: " + path)
 	var dataSlice = make([]Element, 0)
 	lines := strings.Split(string(birthdayFile), "\n")
 	//rangeLines := lines[:len(lines)-1]

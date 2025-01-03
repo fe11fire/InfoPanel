@@ -17,13 +17,17 @@ func GetPresentHandler(w http.ResponseWriter, r *http.Request) {
 	title = r.FormValue("title")
 	if path == "" {
 		currentDir, err := os.Getwd()
-		folder, err := os.Open(currentDir + "\\" + Conf.PathPresent)
-		defer folder.Close()
-		fmt.Println("Working directory: " + currentDir + "\\" + Conf.PathPresent)
 		if err != nil {
-			log.Println(err)
+			fmt.Println("cant get current dir: ", err.Error())
 			return
 		}
+		folder, err := os.Open(currentDir + "\\" + Conf.PathPresent)
+		if err != nil {
+			fmt.Println("cant get folder: ", err.Error())
+			return
+		}
+		defer folder.Close()
+		fmt.Println("Working directory: " + currentDir + "\\" + Conf.PathPresent)
 		// Получаем список файлов и папок
 		files, err := folder.Readdir(-1)
 		if err != nil {
@@ -34,8 +38,8 @@ func GetPresentHandler(w http.ResponseWriter, r *http.Request) {
 		// Выводим имена файлов и папок
 		if title == "true" {
 			for _, file := range files {
-				if file.Name() == "title.txt" {
-					titleFile, err := os.ReadFile(currentDir + "\\" + Conf.PathPresent + "\\" + "title.txt")
+				if file.Name() == Conf.FilePresent {
+					titleFile, err := os.ReadFile(currentDir + "\\" + Conf.PathPresent + "\\" + Conf.FilePresent)
 					if err != nil {
 						log.Println("cant open title.txt: ", err.Error())
 						return
@@ -53,7 +57,7 @@ func GetPresentHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		//if title == "false" {
 		for _, file := range files {
-			if file.IsDir() == true {
+			if file.IsDir() {
 				if file.Name() == "title.txt" {
 				} else {
 					names = append(names, file.Name())
@@ -65,13 +69,17 @@ func GetPresentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	} else {
 		currentDir, err := os.Getwd()
-		folder, err := os.Open(currentDir + "\\" + Conf.PathPresent + "\\" + path)
-		defer folder.Close()
-		fmt.Println("Working directory: " + currentDir + "\\" + Conf.PathPresent + "\\" + path)
 		if err != nil {
-			log.Println(err)
+			fmt.Println("cant get current dir: ", err.Error())
 			return
 		}
+		folder, err := os.Open(currentDir + "\\" + Conf.PathPresent + "\\" + path)
+		if err != nil {
+			fmt.Println("cant get folder: ", err.Error())
+			return
+		}
+		defer folder.Close()
+		fmt.Println("Working directory: " + currentDir + "\\" + Conf.PathPresent + "\\" + path)
 		// Получаем список файлов и папок
 		files, err := folder.Readdir(-1)
 		if err != nil {
@@ -82,8 +90,8 @@ func GetPresentHandler(w http.ResponseWriter, r *http.Request) {
 		// Выводим имена файлов и папок
 		if title == "true" {
 			for _, file := range files {
-				if file.Name() == "title.txt" {
-					path := currentDir + "\\" + Conf.PathPresent + "\\" + path + "\\" + "title.txt"
+				if file.Name() == Conf.FilePresent {
+					path := currentDir + "\\" + Conf.PathPresent + "\\" + path + "\\" + Conf.FilePresent
 					titleFile, err := os.ReadFile(path)
 					if err != nil {
 						log.Println("cant open title.txt: ", err.Error())
@@ -103,8 +111,8 @@ func GetPresentHandler(w http.ResponseWriter, r *http.Request) {
 		//	if title == "false" {
 		for _, file := range files {
 			//кроме title.txt
-			if file.IsDir() == false {
-				if file.Name() == "title.txt" {
+			if !file.IsDir() {
+				if file.Name() == Conf.FilePresent {
 				} else {
 					names = append(names, file.Name())
 				}
