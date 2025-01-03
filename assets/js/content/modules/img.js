@@ -3,7 +3,7 @@ class Img {
     static request_data = {};
     static prehash = 'imgs';
 
-    #folder = Default.backend.path_images + '/';
+    #folder = Default.paths.path_images + '/';
     #name = '';
     constructor(name) {
         this.#name = name;
