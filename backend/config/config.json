@@ -1,0 +1,10 @@
+{
+    "server_ip":"127.0.0.1",
+    "server_port":8080,
+    "path_video":"..\\video",
+    "path_present":"..\\present",
+    "path_birthday":"..\\birthday\\",
+    "path_images":"..\\image\\",
+    "file_birthday":"birthday.txt",
+    "path_text":"..\\text\\"
+}
