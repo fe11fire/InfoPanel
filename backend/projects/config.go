@@ -17,6 +17,7 @@ type Config struct {
 	PathText     string `json:"path_text"`
 	PathHoliday  string `json:"path_holiday"`
 	FileHoliday  string `json:"file_holiday"`
+	FilePresent  string `json:"file_present"`
 }
 
 func getConfig() (Config, error) {

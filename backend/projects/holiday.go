@@ -37,7 +37,13 @@ func GetHolidayHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	currentDir, err := os.Getwd()
-	holidayFile, err := os.ReadFile(currentDir + "\\" + Conf.PathHoliday + "\\" + Conf.FileHoliday)
+	if err != nil {
+		fmt.Println("cant get current dir: ", err.Error())
+		return
+	}
+	path := currentDir + "\\" + Conf.PathHoliday + "\\" + Conf.FileHoliday
+	fmt.Println("Path: " + path)
+	holidayFile, err := os.ReadFile(path)
 	if err != nil {
 		fmt.Println("cant open holiday.txt: ", err.Error())
 		return
@@ -52,7 +58,7 @@ func GetHolidayHandler(w http.ResponseWriter, r *http.Request) {
 
 	for i := 0; i < len(holidayLines); i++ {
 		holidayLine := strings.Split(holidayLines[i], ":")
-		dateStr := strconv.Itoa(day2) + "." + strconv.Itoa(month)
+		dateStr := "0" + strconv.Itoa(day2) + "." + "0" + strconv.Itoa(month)
 		//+birthdayLine[1]+birthdayLine[2]
 		if holidayLine[0] == dateStr {
 			fio := holidayLine[1]

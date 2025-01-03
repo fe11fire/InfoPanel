@@ -15,6 +15,7 @@ func main() {
 func startApp() {
 	http.Handle("/video", corsHandler(http.HandlerFunc(panicRecovery(GetFilenamesHandler))))
 	http.Handle("/birthday", corsHandler(http.HandlerFunc(panicRecovery(GetBirthdayHandler))))
+	http.Handle("/holiday", corsHandler(http.HandlerFunc(panicRecovery(GetHolidayHandler))))
 	http.Handle("/birthdays", corsHandler(http.HandlerFunc(panicRecovery(GetBirthdaysHandler))))
 	http.Handle("/present", corsHandler(http.HandlerFunc(panicRecovery(GetPresentHandler))))
 	http.Handle("/config", corsHandler(http.HandlerFunc(panicRecovery(GetConfigHandler))))

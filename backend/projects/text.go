@@ -20,12 +20,12 @@ func GetTextHandler(w http.ResponseWriter, r *http.Request) {
 	if name == "" {
 
 		folder, err := os.Open(currentDir + "\\" + Conf.PathText)
-		defer folder.Close()
-		fmt.Println("Working directory: " + currentDir + "\\" + Conf.PathText)
 		if err != nil {
-			log.Println(err)
+			fmt.Println("cant get folder: ", err.Error())
 			return
 		}
+		defer folder.Close()
+		fmt.Println("Working directory: " + currentDir + "\\" + Conf.PathText)
 		// Получаем список файлов и папок
 		files, err := folder.Readdir(-1)
 		if err != nil {
@@ -34,7 +34,7 @@ func GetTextHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		names := make([]string, 0)
 		for _, file := range files {
-			if file.IsDir() == false {
+			if !file.IsDir() {
 				names = append(names, file.Name())
 			}
 		}
@@ -52,5 +52,4 @@ func GetTextHandler(w http.ResponseWriter, r *http.Request) {
 		names = append(names, line)
 	}
 	responceFiles(w, names)
-	return
 }
