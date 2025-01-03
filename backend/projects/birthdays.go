@@ -64,7 +64,7 @@ func GetBirthdayHandler(w http.ResponseWriter, r *http.Request) {
 
 	for i := 0; i < len(birthdayLines); i++ {
 		birthdayLine := strings.Split(birthdayLines[i], ":")
-		dateStr := strconv.Itoa(day2) + "." + strconv.Itoa(month)
+		dateStr := "0" + strconv.Itoa(day2) + "." + "0" + strconv.Itoa(month)
 		//+birthdayLine[1]+birthdayLine[2]
 		if birthdayLine[0] == dateStr {
 			fio := birthdayLine[1]
