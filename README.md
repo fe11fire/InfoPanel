@@ -154,3 +154,8 @@ Right-click on Chrome and select New > Dword (32-bit) Value.
 Name it `SuppressUnsupportedOSWarning`.
 Double-click on the name and set its value to 1.
 Restart the computer.
+
+**Настройка автолога Windows**
+
+https://docs.microsoft.com/ru-ru/sysinternals/downloads/autologon
+
