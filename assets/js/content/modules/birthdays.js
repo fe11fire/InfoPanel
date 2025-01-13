@@ -87,7 +87,7 @@ class Birthdays {
         let out = [];
         data.forEach(d => {
             let date_split = d.date.split('.');
-            let date_moment = moment([2024, date_split[1] - 1, date_split[0]]);
+            let date_moment = moment([moment().year(), date_split[1] - 1, date_split[0]]);
             if (date_moment.isBefore(now)) {
                 date_moment.add(1, 'y');
             }
