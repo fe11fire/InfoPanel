@@ -59,12 +59,7 @@ class Present {
                 delay: config.getByName('content_present_interval'),
             },
             on: {
-                reachBeginning: function () {
-                    swiper.destroy(false, true);
-                    $('.swiper-wrapper').remove();
-                    $('#div_present').addClass('d-none');
-                    ContentRouter.nextJob();
-                },
+                reachBeginning: Present.#endPresent,
             },
         }
 
@@ -111,6 +106,10 @@ class Present {
 
         swiper.update();
         swiper.autoplay.start();
+        if (imgs.length == 1) {
+            setTimeout(Present.#endPresent, config.getByName('content_present_interval'));
+        }
+
     }
 
     static async #findImages(folder, testData = undefined) {
@@ -150,5 +149,12 @@ class Present {
             cl: new Present(data),
         }
         return job;
+    }
+
+    static #endPresent() {
+        swiper.destroy(false, true);
+        $('.swiper-wrapper').remove();
+        $('#div_present').addClass('d-none');
+        ContentRouter.nextJob();
     }
 }
