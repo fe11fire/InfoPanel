@@ -20,16 +20,19 @@ class Video {
 
     async show() {
 
-        // $('#div_img').addClass('d-none');
+        const player1 = document.querySelector('#player');
+
+
         player = new Plyr('#player', {
             loadSprite: false
         });
 
+        player1.addEventListener('error', event => console.error('Doh!', player.error, event), false);
+
         player.on('ended', (event) => {
-            player.destroy();
-            $('#div_player').addClass('d-none');
-            randomManage();
+            Video.#endVideo(player)
         });
+
 
         player.source = {
             type: 'video',
@@ -37,11 +40,25 @@ class Video {
             sources: [{
                 src: this.#folder + this.#name,
                 type: 'video/mp4',
-            },
-            ],
+            },],
         };
+
+        player.volume = config.getByName('content_video_volume');
         $('#div_player').removeClass('d-none');
+
+        let errorCancelTimeout = setTimeout(() => { Video.#endVideo(player) }, 3000);
+
+        player.on('playing', (event) => {
+            clearTimeout(errorCancelTimeout);
+        });
+
         player.play();
+    }
+
+    static #endVideo(player) {
+        player.destroy();
+        $('#div_player').addClass('d-none');
+        randomManage();
     }
 
     static makeJob(data) {
@@ -61,7 +78,7 @@ class Video {
                     $('<video></video>')
                         .attr('id', 'player')
                         .addClass('h-100 w-100')
-                        .attr('data-plyr-config', '{ "blankVideo": "assets/plyr/blank.mp4" }')
+                        .attr('data-plyr-config', '{ "blankVideo": "assets/plyr/blank.mp4"}')
                         .append(
                             $('<source>').attr('type', 'video/mp4')
                         )

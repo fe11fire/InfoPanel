@@ -4,7 +4,9 @@ class ContentRouter {
     // static #sources = [Birthdays];
     // static #sources = [Present];
     // static #sources = [Text];
+    // static #sources = [Video];
     static #sources = [Present, Video, Img, Text, Birthdays];
+
 
     static async #addJobs(myClass, testData = undefined) {
         let jobs = [];

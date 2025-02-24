@@ -27,6 +27,7 @@ class Default {
         config_update_interval: 20000,
         jobs_restart_timeOut: 10000,
         header_text: '',
+        content_video_volume: 0.5, //content video volume form 0 to 1
         content_present_interval: 10000,
         content_img_interval: 10000,
         content_text_interval: 10000,
