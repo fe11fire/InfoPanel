@@ -2,8 +2,8 @@ class LineRouter {
     static lines = [];
     static last_line;
     static round = 1;
-    // static #sources = [Birthday];
-    static #sources = [Birthday, Holiday];
+    static #sources = [Birthday];
+    // static #sources = [Birthday, Holiday];
 
     static initContent() {
         LineRouter.#sources.forEach(source => {
