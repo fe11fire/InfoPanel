@@ -21,5 +21,6 @@
     "info_line_height": "80px",
     "info_line_changing_interval": 10000,
     "birthday_name_font_size": "30px",
-    "birthday_text_font_size": "24px"
+    "birthday_text_font_size": "24px",
+    "content_video_volume": 0
 }
