@@ -5,7 +5,7 @@ class ContentRouter {
     // static #sources = [Present];
     // static #sources = [Text];
     // static #sources = [Video];
-    static #sources = [Present, Video, Img, Text, Birthdays];
+    static #sources = [Present, Img, Text, Birthdays, Video];
 
 
     static async #addJobs(myClass, testData = undefined) {
@@ -13,7 +13,9 @@ class ContentRouter {
         let data = await myClass.getData(testData);
         if (data.result) {
             data.result.forEach(e => {
-                jobs.push(myClass.makeJob(e));
+                if (this.#filterExtension(myClass, e)) {
+                    jobs.push(myClass.makeJob(e));
+                }
             });
         }
         return jobs;
@@ -34,7 +36,6 @@ class ContentRouter {
         for (let i = 0; i < ContentRouter.#sources.length; i++) {
             jobs = jobs.concat(await ContentRouter.#addJobs(ContentRouter.#sources[i]));
         }
-        // jobs = jobs.concat(await Router.#addJobs(Text, ['1.txt', '2.txt']));
 
         jobs.forEach(job => {
             let index = ContentRouter.jobs.findIndex(function (e) {
@@ -54,7 +55,8 @@ class ContentRouter {
             ContentRouter.#shuffleJobs();
             $('body').css('height', $(window).height() + 'px');
         }
-        console.log(ContentRouter.jobs);
+
+        // console.log(ContentRouter.jobs);
     }
 
     static async nextJob() {
@@ -75,5 +77,18 @@ class ContentRouter {
             ContentRouter.jobs[i] = ContentRouter.jobs[j];
             ContentRouter.jobs[j] = temp;
         }
+    }
+
+    static #filterExtension(myClass, fileName) {
+        let ignore = config.getByName('content_extensions_ignore');
+        let ext = fileName.split('.');
+        ext = (ext.length == 1) ? '' : ext[ext.length - 1];
+        return (
+            (!ignore['common'].includes(ext)) &&
+            (
+                (!ignore[myClass.name]) ||
+                (!ignore[myClass.name].includes(ext))
+            )
+        );
     }
 }

@@ -35,6 +35,11 @@ class Default {
         content_birthdays_next_count: 5,
         content_birthdays_prev_count: 2,
         content_birthdays_max_font_size: 24, // пиксели
+        content_extensions_ignore: {
+            "common": [],
+            "video": [],
+            "text:": []
+        },
         info_line_changing_interval: 15000,
     };
 

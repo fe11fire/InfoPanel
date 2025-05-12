@@ -52,7 +52,7 @@ class LineRouter {
         LineRouter.lines = newLines.concat(currentLines);
         LineRouter.lines = Object.values(LineRouter.lines);
 
-        console.log(LineRouter.lines);
+        // console.log(LineRouter.lines);
     }
 
     static async nextLine() {
