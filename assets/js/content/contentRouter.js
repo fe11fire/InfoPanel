@@ -83,6 +83,9 @@ class ContentRouter {
         if (Array.isArray(fileName)) {
             return true;
         }
+        if (typeof fileName !== 'string') {
+            return false;
+        }
         let ignore = config.getByName('content_extensions_ignore');
         let ext = fileName.split('.');
         ext = (ext.length == 1) ? '' : ext[ext.length - 1];
