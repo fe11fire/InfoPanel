@@ -1,7 +1,8 @@
 class Text {
-    static url = Default.backend_url + 'text';
+    static name = 'text';
+    static url = Default.backend_url + this.name;
     static request_data = {};
-    static prehash = 'text';
+    static prehash = this.name;
 
     #name = '';
     constructor(name) {

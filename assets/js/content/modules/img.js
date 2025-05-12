@@ -1,7 +1,8 @@
 class Img {
-    static url = Default.backend_url + 'imgs';
+    static name = 'img';
+    static url = Default.backend_url + this.name;
     static request_data = {};
-    static prehash = 'imgs';
+    static prehash = this.name;
 
     #folder = Default.paths.path_images + '/';
     #name = '';
