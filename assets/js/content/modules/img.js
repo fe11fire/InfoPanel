@@ -1,5 +1,5 @@
 class Img {
-    static name = 'img';
+    static name = 'imgs';
     static url = Default.backend_url + this.name;
     static request_data = {};
     static prehash = this.name;
