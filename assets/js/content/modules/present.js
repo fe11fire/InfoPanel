@@ -1,7 +1,8 @@
 class Present {
-    static url = Default.backend_url + 'present';
+    static name = 'present';
+    static url = Default.backend_url + this.name;
     static request_data = {};
-    static prehash = 'present';
+    static prehash = this.name;
 
     #folder = Default.paths.path_present + '/';
     #name = '';

@@ -1,7 +1,8 @@
 class Video {
-    static url = Default.backend_url + 'video';
+    static name = 'video';
+    static url = Default.backend_url + this.name;
     static request_data = {};
-    static prehash = 'video';
+    static prehash = this.name;
     static player;
 
     #folder = Default.paths.path_video + '/';
@@ -19,20 +20,13 @@ class Video {
     }
 
     async show() {
-
-        const player1 = document.querySelector('#player');
-
-
         player = new Plyr('#player', {
             loadSprite: false
         });
 
-        player1.addEventListener('error', event => console.error('Doh!', player.error, event), false);
-
         player.on('ended', (event) => {
             Video.#endVideo(player)
         });
-
 
         player.source = {
             type: 'video',
@@ -46,7 +40,7 @@ class Video {
         player.volume = config.getByName('content_video_volume');
         $('#div_player').removeClass('d-none');
 
-        let errorCancelTimeout = setTimeout(() => { Video.#endVideo(player) }, 3000);
+        let errorCancelTimeout = setTimeout(() => { Video.#endVideo(player) }, 5000);
 
         player.on('playing', (event) => {
             clearTimeout(errorCancelTimeout);

@@ -1,7 +1,8 @@
 class Birthdays {
-    static url = Default.backend_url + 'birthdays';
+    static name = 'birthdays';
+    static url = Default.backend_url + this.name;
     static request_data = {};
-    static prehash = 'birthdays';
+    static prehash = this.name;
 
     #name = '';
     constructor(name) {
