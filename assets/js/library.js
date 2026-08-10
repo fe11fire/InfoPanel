@@ -9,24 +9,105 @@ class Library {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
 
-    // Содержимое content и config выводится только текстовыми узлами: jQuery .html()
-    // исполняет разметку из файлов, которые приложение не контролирует.
+    // Теги оформления, разрешенные в контенте. Остальные отбрасываются, но их
+    // содержимое сохраняется, чтобы текст не пропадал из-за лишней разметки.
+    static #allowedTags = {
+        B: 1, STRONG: 1, I: 1, EM: 1, U: 1, S: 1, SPAN: 1, BR: 1,
+        SUB: 1, SUP: 1, SMALL: 1, BIG: 1, FONT: 1
+    };
+
+    // Теги, которые отбрасываются вместе с содержимым.
+    static #droppedTags = { SCRIPT: 1, STYLE: 1, TEMPLATE: 1, IFRAME: 1, OBJECT: 1, EMBED: 1 };
+
+    // Свойства style и допустимые значения. Значение проверяется целиком, поэтому
+    // ни url(), ни закрывающая кавычка, ни лишнее свойство пройти не могут.
+    static #allowedStyle = {
+        'color': /^(#[0-9a-f]{3,8}|[a-z]+|rgba?\([\d.,%\s]+\)|hsla?\([\d.,%\s]+\))$/i,
+        'background-color': /^(#[0-9a-f]{3,8}|[a-z]+|rgba?\([\d.,%\s]+\)|hsla?\([\d.,%\s]+\))$/i,
+        'font-weight': /^(normal|bold|bolder|lighter|[1-9]00)$/i,
+        'font-style': /^(normal|italic|oblique)$/i,
+        'text-decoration': /^(none|underline|overline|line-through)$/i,
+        'font-size': /^\d+(\.\d+)?(px|pt|em|rem|%)$/i,
+        'text-transform': /^(none|uppercase|lowercase|capitalize)$/i,
+        'letter-spacing': /^-?\d+(\.\d+)?(px|pt|em|rem)$/i
+    };
+
+    // Содержимое content и config никогда не попадает в .html(): jQuery исполняет
+    // переданную разметку. Строка разбирается в изолированном документе, где
+    // скрипты не выполняются и картинки не загружаются, и пересобирается по
+    // белому списку - оформление остается, исполняемое отбрасывается.
+    static markup(value) {
+        let doc = new DOMParser().parseFromString(String(value), 'text/html');
+        return Library.#rebuild(doc.body);
+    }
+
+    static #rebuild(source) {
+        let out = document.createDocumentFragment();
+        source.childNodes.forEach(node => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                out.appendChild(document.createTextNode(node.nodeValue));
+                return;
+            }
+            if (node.nodeType !== Node.ELEMENT_NODE) {
+                return;
+            }
+            if (Library.#droppedTags[node.tagName]) {
+                return;
+            }
+            if (!Library.#allowedTags[node.tagName]) {
+                out.appendChild(Library.#rebuild(node));
+                return;
+            }
+            let el = document.createElement(node.tagName.toLowerCase());
+            let cssClass = node.getAttribute('class');
+            if (cssClass) {
+                el.setAttribute('class', cssClass);
+            }
+            let style = Library.#cleanStyle(node.getAttribute('style'));
+            if (style) {
+                el.setAttribute('style', style);
+            }
+            el.appendChild(Library.#rebuild(node));
+            out.appendChild(el);
+        });
+        return out;
+    }
+
+    static #cleanStyle(value) {
+        if (!value) {
+            return '';
+        }
+        let out = [];
+        value.split(';').forEach(part => {
+            let i = part.indexOf(':');
+            if (i == -1) {
+                return;
+            }
+            let name = part.slice(0, i).trim().toLowerCase();
+            let val = part.slice(i + 1).trim();
+            if (Library.#allowedStyle[name] && Library.#allowedStyle[name].test(val)) {
+                out.push(name + ': ' + val);
+            }
+        });
+        return out.join('; ');
+    }
+
     static setLines(target, lines) {
         let el = $(target).empty();
         lines.forEach((line, i) => {
             if (i > 0) {
                 el.append($('<br>'));
             }
-            el.append(document.createTextNode(line));
+            el.append(Library.markup(line));
         });
         return el;
     }
 
     static text(value, cssClass) {
         if (!cssClass) {
-            return document.createTextNode(value);
+            return Library.markup(value);
         }
-        return $('<span></span>').addClass(cssClass).text(value);
+        return $('<span></span>').addClass(cssClass).append(Library.markup(value));
     }
 
     // Имя файла попадает в URL, в css url() и в атрибут style, поэтому кодируются

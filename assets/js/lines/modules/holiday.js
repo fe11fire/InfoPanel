@@ -51,7 +51,7 @@ class Holiday {
         $('#div_holiday p')
             .empty()
             .append(document.createTextNode('Сегодня отмечается  '))
-            .append($('<span></span>').addClass('span_holiday_name').text(this.#name))
+            .append($('<span></span>').addClass('span_holiday_name').append(Library.markup(this.#name)))
             .append(document.createTextNode('  !'));
         $('#div_holiday').css('background-position', Library.randomIntFromInterval(1, 100) + 'px ' + Library.randomIntFromInterval(1, 100) + 'px')
         $('#div_row_info_line').addClass('is-show');

@@ -90,7 +90,7 @@ class Config {
             document.documentElement.style.setProperty("--" + e, this.getByName(e));
         });
 
-        $('#div_header p').text(this.getByName('header_text'));
+        $('#div_header p').empty().append(Library.markup(this.getByName('header_text')));
 
         Config.updateElementsSize(this);
 

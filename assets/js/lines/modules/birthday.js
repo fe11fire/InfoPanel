@@ -54,7 +54,7 @@ class Birthday {
         $('#div_birthday').removeClass('d-none');
         $('#div_birthday p')
             .empty()
-            .append($('<span></span>').addClass('span_birthday_name').text(this.#name))
+            .append($('<span></span>').addClass('span_birthday_name').append(Library.markup(this.#name)))
             .append(document.createTextNode('   поздравляем с днем рождения  !'));
         $('#div_birthday').css('background-position', Library.randomIntFromInterval(1, 100) + 'px ' + Library.randomIntFromInterval(1, 100) + 'px')
         $('#div_row_info_line').addClass('is-show');
