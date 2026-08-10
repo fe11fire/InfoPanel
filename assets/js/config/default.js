@@ -35,10 +35,11 @@ class Default {
         content_birthdays_next_count: 5,
         content_birthdays_prev_count: 2,
         content_birthdays_max_font_size: 24, // пиксели
+        // Ключи, кроме common, должны совпадать со статическим name модуля контента
         content_extensions_ignore: {
             "common": [],
             "video": [],
-            "text:": []
+            "text": []
         },
         info_line_changing_interval: 15000,
     };

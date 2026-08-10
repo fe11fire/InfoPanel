@@ -59,7 +59,7 @@
    ```
    {"result":["video1.mp4","video2.mp4"]}
    ```
-- `backend_url\img` - получение имен файлов каталога `path_img` (имена каталогов игнорируются). 
+- `backend_url\imgs` - получение имен файлов каталога `path_images` (имена каталогов игнорируются). 
 
    Пример response:
 
@@ -101,12 +101,12 @@
       ```
       {"result":["title line 1","title line 2"]}
       ```
-- `backend_url\birthdays` - получение содержимого текстового файла `path_birthday\file_birthday` построчно. 
+- `backend_url\birthdays` - получение содержимого текстового файла `path_birthday\file_birthday`, где каждая строка вида `dayNumber.monthNumber:name` разобрана на объект с полями `date` и `fio`. 
 
    Пример response:
 
    ```
-   {"result":["12.10:Ronald Montgomery","12.10:Jane Cooper","21.11:Stacy Adams"]}
+   {"result":[{"date":"12.10","fio":"Ronald Montgomery"},{"date":"12.10","fio":"Jane Cooper"},{"date":"21.11","fio":"Stacy Adams"}]}
    ```
 - `backend_url\birthday?day=dayNumber&month=monthNumber` - получение имен только из тех строк, которые соответствуют маске `dayNumber.monthNumber` текстового файла `path_birthday\file_birthday`. 
 
@@ -122,7 +122,7 @@
    ```
    {"result":["New Year"]}
    ```
-- `backend_url\config` - получение содержимого текстового файла `backend\config.json` построчно. 
+- `backend_url\config` - получение содержимого файла `backend\config.json` как json-объекта. В отличие от остальных запросов, ответ передается без обертки `result`. 
 
    Пример response:
 

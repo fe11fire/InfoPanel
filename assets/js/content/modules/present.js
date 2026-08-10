@@ -48,6 +48,16 @@ class Present {
         $('#div_present').removeClass('d-none');
         $('#div_present_title').addClass('d-none');
         let imgs = await Present.#findImages(this.#name);
+
+        // Завершение презентации привязано к перемотке autoplay на первый слайд.
+        // В пустом каталоге перематывать нечего, событие не наступит и панель
+        // останется с пустой областью контента - такой каталог пропускаем.
+        if (imgs.length == 0) {
+            $('#div_present').addClass('d-none');
+            ContentRouter.nextJob();
+            return;
+        }
+
         let title = await Present.#findTitle(this.#name);
 
         $('#swiper').append(
