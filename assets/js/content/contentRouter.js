@@ -56,7 +56,7 @@ class ContentRouter {
             $('body').css('height', $(window).height() + 'px');
         }
 
-        // console.log(ContentRouter.jobs);
+        console.log(ContentRouter.jobs);
     }
 
     static async nextJob() {
@@ -80,10 +80,10 @@ class ContentRouter {
     }
 
     static #filterExtension(myClass, fileName) {
-        if (Array.isArray(fileName)) {
+        if (Array.isArray(fileName)){
             return true;
         }
-        if (typeof fileName !== 'string') {
+        if (typeof fileName !== 'string'){
             return false;
         }
         let ignore = config.getByName('content_extensions_ignore');

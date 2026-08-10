@@ -36,9 +36,9 @@ class Text {
         do {
             div.style.fontSize = size + 'px';
             size--;
-        } while ((div.clientWidth < div.scrollWidth || div.clientHeight < div.scrollHeight) && size > 15);
+        } while ((div.clientWidth < div.scrollWidth || div.clientHeight < div.scrollHeight) && size > 12);
 
-
+        size *= 0.9;
 
 
         setTimeout(() => { $('#div_text').addClass('d-none'); ContentRouter.nextJob() }, config.getByName('content_text_interval'));

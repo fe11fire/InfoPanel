@@ -119,7 +119,8 @@ body {
   font-family: fontBirthDayName;
   font-size: var(--birthday_name_font_size);
   color: var(--birthday_name_color);
-  font-weight: bold;
+  font-weight: 200;
+  letter-spacing: 2px;
 }
 
 canvas {
@@ -163,7 +164,7 @@ canvas.is-show {
   background: var(--content_text_background_color);
   color: var(--content_text_color);
   font-family: fontContentText;
-  line-height: 1.2;
+  line-height: 1.1;
 }
 
 .content_birthdays_date {
