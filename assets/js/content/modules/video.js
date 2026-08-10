@@ -42,7 +42,7 @@ class Video {
             type: 'video',
             storage: { enabled: false },
             sources: [{
-                src: this.#folder + this.#name,
+                src: this.#folder + Library.encodePath(this.#name),
                 type: 'video/mp4',
             },],
         };

@@ -48,7 +48,11 @@ class Holiday {
 
     show() {
         $('#div_holiday').removeClass('d-none');
-        $('#div_holiday p').html('Сегодня отмечается&nbsp;&nbsp;<span class="span_holiday_name">' + this.#name + '</span>&nbsp;&nbsp;!');
+        $('#div_holiday p')
+            .empty()
+            .append(document.createTextNode('Сегодня отмечается  '))
+            .append($('<span></span>').addClass('span_holiday_name').text(this.#name))
+            .append(document.createTextNode('  !'));
         $('#div_holiday').css('background-position', Library.randomIntFromInterval(1, 100) + 'px ' + Library.randomIntFromInterval(1, 100) + 'px')
         $('#div_row_info_line').addClass('is-show');
     }

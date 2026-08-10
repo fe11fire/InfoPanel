@@ -49,8 +49,8 @@ class Birthdays {
                             .addClass('col-3')
                             .append(
                                 $('<p></p>')
-                                    .html(e.date)
                                     .addClass('text-end pe-3 content_birthdays_date')
+                                    .append(Library.text(e.date, e.date_class))
                             )
                     )
                     .append(
@@ -58,8 +58,8 @@ class Birthdays {
                             .addClass('col-9')
                             .append(
                                 $('<p></p>')
-                                    .html(e.name)
                                     .addClass('ps-3 content_birthdays_name')
+                                    .append(Library.text(e.name, e.name_class))
                             )
                     )
             )
@@ -102,13 +102,13 @@ class Birthdays {
             (i < config.getByName('content_birthdays_next_count')) &&
             (i < data.length)
         ) {
-            let date = data[i].moment.format('D MMMM');
-            let name = data[i].fio;
-            if (data[i].diff == 0) {
-                date = '<span class="today">' + date + '</span>';
-                name = '<span class="today">' + name + '</span>';
-            }
-            out.push({ date: date, name: name });
+            let cls = (data[i].diff == 0) ? 'today' : '';
+            out.push({
+                date: data[i].moment.format('D MMMM'),
+                name: data[i].fio,
+                date_class: cls,
+                name_class: cls
+            });
             i++;
         }
 
@@ -117,7 +117,12 @@ class Birthdays {
             (i < config.getByName('content_birthdays_prev_count')) &&
             (i < data.length)
         ) {
-            out.unshift({ date: '<span class="prev">' + data[data.length - i - 1].moment.format('D MMMM') + '</span>', name: data[data.length - i - 1].fio });
+            out.unshift({
+                date: data[data.length - i - 1].moment.format('D MMMM'),
+                name: data[data.length - i - 1].fio,
+                date_class: 'prev',
+                name_class: ''
+            });
             i++;
         }
 

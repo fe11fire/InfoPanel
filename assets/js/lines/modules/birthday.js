@@ -52,7 +52,10 @@ class Birthday {
 
     show() {
         $('#div_birthday').removeClass('d-none');
-        $('#div_birthday p').html('<span class="span_birthday_name">' + this.#name + '</span>&nbsp;&nbsp;&nbsp;поздравляем с днем рождения  !');
+        $('#div_birthday p')
+            .empty()
+            .append($('<span></span>').addClass('span_birthday_name').text(this.#name))
+            .append(document.createTextNode('   поздравляем с днем рождения  !'));
         $('#div_birthday').css('background-position', Library.randomIntFromInterval(1, 100) + 'px ' + Library.randomIntFromInterval(1, 100) + 'px')
         $('#div_row_info_line').addClass('is-show');
     }

@@ -102,8 +102,9 @@ class Present {
         swiper.autoplay.stop();
 
         let index = 1;
+        let folder = this.#folder + Library.encodePath(this.#name) + '/';
         imgs.forEach(i => {
-            swiper.addSlide(index, '<div class="swiper-slide" style="background-image: url(\'' + this.#folder + this.#name + '/' + i + '\')"></div>')
+            swiper.addSlide(index, '<div class="swiper-slide" style="background-image: url(\'' + folder + Library.encodePath(i) + '\')"></div>')
             index++;
         });
 
@@ -111,7 +112,7 @@ class Present {
             (title.length > 0) &&
             (title[0] != '')
         ) {
-            $('#div_present_title p').html(title.join('<br>'));
+            Library.setLines('#div_present_title p', title);
             $('#div_present_title').removeClass('d-none');
         }
 

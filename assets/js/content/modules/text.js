@@ -30,7 +30,7 @@ class Text {
 
         let message = await Text.#findMessage(this.#name);
 
-        $('#div_text').html(message.join('<br>'));
+        Library.setLines('#div_text', message);
         let size = 120;
         let div = document.querySelectorAll("#div_text")[0];
         do {
