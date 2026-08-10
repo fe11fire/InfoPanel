@@ -4,6 +4,9 @@ class Video {
     static request_data = {};
     static prehash = this.name;
     static player;
+    // Завершение может прийти дважды: по событию ended и по таймауту ошибки,
+    // а второй destroy() ломает разметку плеера и запускает лишнюю ветку ротации.
+    static #ended = false;
 
     #folder = Default.paths.path_video + '/';
     #name = '';
@@ -20,6 +23,13 @@ class Video {
     }
 
     async show() {
+        // Plyr пересоздает элемент <video> при установке source, поэтому id="player"
+        // после первого показа в DOM отсутствует. Если положиться на элемент из
+        // initContent, повторный new Plyr не найдет медиа, player.volume упадет и
+        // оборвет show() вместе со всей ротацией - собираем элемент заново.
+        $('#div_player').html(Video.#makeMedia());
+        Video.#ended = false;
+
         player = new Plyr('#player', {
             loadSprite: false
         });
@@ -50,6 +60,10 @@ class Video {
     }
 
     static #endVideo(player) {
+        if (Video.#ended) {
+            return;
+        }
+        Video.#ended = true;
         player.destroy();
         $('#div_player').addClass('d-none');
         randomManage();
@@ -63,20 +77,22 @@ class Video {
         return job;
     }
 
+    static #makeMedia() {
+        return $('<video></video>')
+            .attr('id', 'player')
+            .addClass('h-100 w-100')
+            .attr('data-plyr-config', '{ "blankVideo": "assets/plyr/blank.mp4"}')
+            .append(
+                $('<source>').attr('type', 'video/mp4')
+            );
+    }
+
     static initContent() {
         $('#div_content_area').append(
             $('<div></div>')
                 .attr('id', 'div_player')
                 .addClass('w-100 h-100 d-none align-items-center')
-                .append(
-                    $('<video></video>')
-                        .attr('id', 'player')
-                        .addClass('h-100 w-100')
-                        .attr('data-plyr-config', '{ "blankVideo": "assets/plyr/blank.mp4"}')
-                        .append(
-                            $('<source>').attr('type', 'video/mp4')
-                        )
-                )
+                .append(Video.#makeMedia())
         );
     }
 }

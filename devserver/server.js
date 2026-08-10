@@ -195,7 +195,7 @@ function sendJson(res, obj) {
   return true;
 }
 
-function serveStatic(pathname, res) {
+function serveStatic(pathname, res, rangeHeader) {
   const rel = decodeURIComponent(pathname === '/' ? '/index.html' : pathname);
   const file = safeJoin(ROOT, '.' + rel);
   if (!file || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
@@ -203,8 +203,36 @@ function serveStatic(pathname, res) {
     res.end('404 page not found');
     return;
   }
+
+  const size = fs.statSync(file).size;
+  const type = MIME[path.extname(file).toLowerCase()] || 'application/octet-stream';
+
+  // Без поддержки Range браузер не может перемотать видео, не скачав файл целиком.
+  const m = /^bytes=(\d*)-(\d*)$/.exec(rangeHeader || '');
+  if (m && (m[1] !== '' || m[2] !== '')) {
+    let start = m[1] === '' ? size - Number(m[2]) : Number(m[1]);
+    let end = m[1] === '' || m[2] === '' ? size - 1 : Number(m[2]);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || start > end || start >= size) {
+      res.writeHead(416, { 'Content-Range': 'bytes */' + size });
+      res.end();
+      return;
+    }
+    end = Math.min(end, size - 1);
+    res.writeHead(206, {
+      'Content-Type': type,
+      'Content-Length': end - start + 1,
+      'Content-Range': 'bytes ' + start + '-' + end + '/' + size,
+      'Accept-Ranges': 'bytes',
+      'Cache-Control': 'no-store',
+    });
+    fs.createReadStream(file, { start, end }).pipe(res);
+    return;
+  }
+
   res.writeHead(200, {
-    'Content-Type': MIME[path.extname(file).toLowerCase()] || 'application/octet-stream',
+    'Content-Type': type,
+    'Content-Length': size,
+    'Accept-Ranges': 'bytes',
     'Cache-Control': 'no-store',
   });
   fs.createReadStream(file).pipe(res);
@@ -239,7 +267,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  serveStatic(parsed.pathname, res);
+  serveStatic(parsed.pathname, res, req.headers.range);
 });
 
 const cfg = readConfig() || {};
