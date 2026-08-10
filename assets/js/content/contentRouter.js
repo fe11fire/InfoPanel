@@ -33,9 +33,15 @@ class ContentRouter {
         let currentJobs = [];
         let jobs = [];
 
-        for (let i = 0; i < ContentRouter.#sources.length; i++) {
-            jobs = jobs.concat(await ContentRouter.#addJobs(ContentRouter.#sources[i]));
-        }
+        // Источники независимы, поэтому опрашиваются одновременно: последовательное
+        // ожидание складывало задержки всех запросов перед каждым переключением.
+        // Promise.all сохраняет порядок источников, порядок задач не меняется.
+        let sourceJobs = await Promise.all(
+            ContentRouter.#sources.map(source => ContentRouter.#addJobs(source))
+        );
+        sourceJobs.forEach(sourceJob => {
+            jobs = jobs.concat(sourceJob);
+        });
 
         jobs.forEach(job => {
             let index = ContentRouter.jobs.findIndex(function (e) {

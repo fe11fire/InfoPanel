@@ -31,9 +31,12 @@ class LineRouter {
         let currentLines = [];
         let lines = [];
 
-        for (let i = 0; i < LineRouter.#sources.length; i++) {
-            lines = lines.concat(await LineRouter.#addLines(LineRouter.#sources[i]));
-        }
+        let sourceLines = await Promise.all(
+            LineRouter.#sources.map(source => LineRouter.#addLines(source))
+        );
+        sourceLines.forEach(sourceLine => {
+            lines = lines.concat(sourceLine);
+        });
 
         // lines = lines.concat(await LineRouter.#addLines(Holiday, ['New year', 'Halloween']));
 

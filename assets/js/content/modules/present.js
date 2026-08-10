@@ -47,7 +47,13 @@ class Present {
     async show() {
         $('#div_present').removeClass('d-none');
         $('#div_present_title').addClass('d-none');
-        let imgs = await Present.#findImages(this.#name);
+        // Список файлов и заголовок не зависят друг от друга и запрашиваются
+        // одновременно. Для пустого каталога заголовок оказывается лишним, но это
+        // редкий случай, а выигрыш в один сетевой обмен получает каждая презентация.
+        let [imgs, title] = await Promise.all([
+            Present.#findImages(this.#name),
+            Present.#findTitle(this.#name)
+        ]);
 
         // Завершение презентации привязано к перемотке autoplay на первый слайд.
         // В пустом каталоге перематывать нечего, событие не наступит и панель
@@ -57,8 +63,6 @@ class Present {
             ContentRouter.nextJob();
             return;
         }
-
-        let title = await Present.#findTitle(this.#name);
 
         $('#swiper').append(
             $('<div></div>')
