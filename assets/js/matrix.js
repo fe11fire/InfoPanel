@@ -31,10 +31,22 @@ class Matrix {
         return setInterval(this.step, 1, this);
     }
 
+    // Предварительное заполнение канваса, чтобы заставка не начиналась с пустого экрана.
+    // Работа разбита на порции: синхронный цикл подвешивал страницу на несколько секунд.
     prestart() {
-        for (let index = 0; index < 100000; index++) {
-            this.step(this);
-        }
+        let total = this.contentLength * Math.ceil(this.h / 10) * 2;
+        let done = 0;
+        let fill = () => {
+            let limit = Math.min(2000, total - done);
+            for (let i = 0; i < limit; i++) {
+                this.step(this);
+            }
+            done += limit;
+            if (done < total) {
+                setTimeout(fill, 0);
+            }
+        };
+        fill();
     }
 
     static stop(timer) {

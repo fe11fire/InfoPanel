@@ -66,14 +66,21 @@ class Config {
             }
         }
 
-        if ((this.getByName('side_changing')) && (this.#i_side_changing != this.getByName('side_changing_interval'))) {
+        if (!this.getByName('side_changing')) {
+            this.#t_side_changing = this.clearTimer(this.#t_side_changing);
+            this.#i_side_changing = null;
+        } else if (this.#i_side_changing != this.getByName('side_changing_interval')) {
             this.#t_side_changing = this.clearTimer(this.#t_side_changing);
             this.#i_side_changing = this.getByName('side_changing_interval');
-            if (this.getByName('matrix_enable')) {
-                this.#t_side_changing = setInterval(() => { this.#m.screenSaveFunc(Config.changeSide, 0) }, this.getByName('side_changing_interval'));
-            } else {
-                this.#t_side_changing = setInterval(() => { Config.changeSide(); }, this.getByName('side_changing_interval'));
-            }
+            // Матрица проверяется в момент срабатывания, а не при создании таймера,
+            // иначе включение matrix_enable на лету не учитывается до перезагрузки.
+            this.#t_side_changing = setInterval(() => {
+                if ((this.getByName('matrix_enable')) && (this.#m)) {
+                    this.#m.screenSaveFunc(Config.changeSide, 0);
+                } else {
+                    Config.changeSide();
+                }
+            }, this.#i_side_changing);
         }
 
         this.#t_update_interval = this.clearTimer(this.#t_update_interval);

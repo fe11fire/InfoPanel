@@ -4,7 +4,7 @@ const mn = document.querySelector("#mn");
 const sc = document.querySelector("#sc");
 moment.locale('ru');
 
-setInterval(() => {
+function updateClock() {
     let day = new Date();
     let hh = day.getHours() * 30; //360deg / 12 hour => 30
     let mm = day.getMinutes() * deg;
@@ -32,4 +32,7 @@ setInterval(() => {
 
 
     // $('#dayDate').html('<b>' + moment().format('D  YYYY г.') + '<br>' + moment().format('HH:mm:ss') + '</b>');
-});
+}
+
+updateClock();
+setInterval(updateClock, 1000);
