@@ -147,21 +147,18 @@
 
   // Показывать нечего - возвращаемся к часам, как при старте. Обратный переход
   // делает hideScreensaver: он ждет появления контента и сам возвращает панель.
+  // Решение зависит только от ContentRouter: нижняя строка (Birthday/NextBirthdays)
+  // почти всегда не пуста, и если бы заставка ждала опустошения и ее тоже, часы
+  // практически никогда бы не показывались, пока выключен весь основной контент.
   function checkScreensaver() {
-    if (
-      (ContentRouter.jobs.length == 0) &&
-      (LineRouter.lines.length == 0)
-    ) {
+    if (ContentRouter.jobs.length == 0) {
       showScreensaver();
     }
   }
 
   function hideScreensaver() {
     if (
-      (
-        (ContentRouter.jobs.length == 0) &&
-        (LineRouter.lines.length == 0)
-      ) ||
+      (ContentRouter.jobs.length == 0) ||
       (Config.empty == true)
     ) {
       setTimeout(hideScreensaver, config.getByName('start_timeOut'));
