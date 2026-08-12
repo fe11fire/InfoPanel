@@ -108,7 +108,8 @@ body {
 }
 
 #div_birthday p,
-#div_holiday p {
+#div_holiday p,
+#div_next_birthday p {
   font-size: var(--birthday_text_font_size);
   color: var(--birthday_color);
   font-family: fontBirthDayText;
@@ -121,6 +122,24 @@ body {
   color: var(--birthday_name_color);
   font-weight: 200;
   letter-spacing: 2px;
+}
+
+/* Предстоящий ДР визуально спокойнее сегодняшнего: цвета как у верхнего
+   списка (желтая дата / белое имя) вместо красного "поздравляем". */
+.span_next_birthday_name,
+.span_next_birthday_date {
+  font-family: fontBirthDayName;
+  font-size: var(--birthday_name_font_size);
+  font-weight: 200;
+  letter-spacing: 2px;
+}
+
+.span_next_birthday_name {
+  color: var(--content_birthdays_name_color);
+}
+
+.span_next_birthday_date {
+  color: var(--content_birthdays_date_color);
 }
 
 canvas {

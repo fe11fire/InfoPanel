@@ -35,6 +35,7 @@ class Default {
         content_birthdays_next_count: 5,
         content_birthdays_prev_count: 2,
         content_birthdays_max_font_size: 24, // пиксели
+        line_next_birthdays_count: 5, // сколько ближайших ДР показывать строкой внизу
         // Включение модулей. Имя настройки - with_ плюс статическое name модуля.
         // Выключенный модуль не опрашивает backend и убирается из очереди.
         with_present: true,
@@ -43,6 +44,7 @@ class Default {
         with_birthdays: true,
         with_video: true,
         with_birthday: true, // строка с поздравлением
+        with_next_birthdays: true, // строка с ближайшими ДР
         // Ключи, кроме common, должны совпадать со статическим name модуля контента
         content_extensions_ignore: {
             "common": [],

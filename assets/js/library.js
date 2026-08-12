@@ -206,6 +206,30 @@ class Library {
         }, 200);
     }
 
+    // Дата рождения приходит как "ДД.ММ" или, если известен год, "ДД.ММ.ГГГГ".
+    // Возвращает ближайшее наступление даты (в этом году, либо в следующем, если
+    // в этом году дата уже прошла) и год рождения, если он был в строке.
+    static nextBirthdayOccurrence(dateStr) {
+        let now = moment().subtract(1, 'day');
+        let parts = String(dateStr).split('.');
+        let occurrence = moment([moment().year(), parts[1] - 1, parts[0]]);
+        if (occurrence.isBefore(now)) {
+            occurrence.add(1, 'y');
+        }
+        let year = parts.length > 2 ? parseInt(parts[2], 10) : null;
+        return { occurrence: occurrence, year: (Number.isNaN(year) ? null : year) };
+    }
+
+    // Юбилей - возраст, кратный 5. Если год рождения неизвестен или дата не
+    // круглая, отметки не будет.
+    static anniversaryAge(year, occurrence) {
+        if (!year) {
+            return null;
+        }
+        let age = occurrence.year() - year;
+        return (age > 0 && age % 5 === 0) ? age : null;
+    }
+
     // Имя файла попадает в URL, в css url() и в атрибут style, поэтому кодируются
     // и те символы, которые encodeURIComponent оставляет как есть.
     static encodePath(name) {

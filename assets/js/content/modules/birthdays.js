@@ -89,19 +89,18 @@ class Birthdays {
 
     getBirthdays(data) {
         let now = moment().subtract(1, 'day');
-        let out = [];
         data.forEach(d => {
-            let date_split = d.date.split('.');
-            let date_moment = moment([moment().year(), date_split[1] - 1, date_split[0]]);
-            if (date_moment.isBefore(now)) {
-                date_moment.add(1, 'y');
-            }
-            d.diff = date_moment.diff(now, 'days');
-            d.moment = date_moment;
+            let occ = Library.nextBirthdayOccurrence(d.date);
+            d.moment = occ.occurrence;
+            d.diff = occ.occurrence.diff(now, 'days');
+            d.age = Library.anniversaryAge(occ.year, occ.occurrence);
         });
         data.sort((a, b) => a.diff - b.diff);
 
+        let name = (d) => d.age ? (d.fio + ' ( ' + d.age + ' лет )') : d.fio;
+
         let i = 0;
+        let out = [];
         while (
             (i < config.getByName('content_birthdays_next_count')) &&
             (i < data.length)
@@ -109,7 +108,7 @@ class Birthdays {
             let cls = (data[i].diff == 0) ? 'today' : '';
             out.push({
                 date: data[i].moment.format('D MMMM'),
-                name: data[i].fio,
+                name: name(data[i]),
                 date_class: cls,
                 name_class: cls
             });
@@ -123,7 +122,7 @@ class Birthdays {
         ) {
             out.unshift({
                 date: data[data.length - i - 1].moment.format('D MMMM'),
-                name: data[data.length - i - 1].fio,
+                name: name(data[data.length - i - 1]),
                 date_class: 'prev',
                 name_class: ''
             });
