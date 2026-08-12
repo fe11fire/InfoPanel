@@ -230,26 +230,6 @@ class Library {
         return (age > 0 && age % 5 === 0) ? age : null;
     }
 
-    // Общий размер шрифта для набора подписей (например, месяц и день недели
-    // должны совпадать по размеру): уменьшается, пока хотя бы одна не перестанет
-    // вылезать за пределы блока. Каждый раз считается заново от maxSize, а не от
-    // текущего размера - иначе после того как текст станет короче (например,
-    // сменился день недели), шрифт не вернется к исходному размеру сам.
-    // Скрытые элементы (offsetParent === null) пропускаются: их ширину сейчас
-    // измерить нельзя, а форсировать минимальный размер было бы неверно.
-    static fitFontSize(elements, maxSize, minSize = 10) {
-        elements = elements.filter(el => el && el.offsetParent !== null);
-        if (elements.length === 0) {
-            return;
-        }
-        let size = maxSize;
-        elements.forEach(el => el.style.fontSize = size + 'px');
-        while ((size > minSize) && elements.some(el => Library.overflows(el))) {
-            size--;
-            elements.forEach(el => el.style.fontSize = size + 'px');
-        }
-    }
-
     // Имя файла попадает в URL, в css url() и в атрибут style, поэтому кодируются
     // и те символы, которые encodeURIComponent оставляет как есть.
     static encodePath(name) {
