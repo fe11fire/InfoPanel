@@ -23,6 +23,35 @@ class Text {
                 .attr('id', 'div_text')
                 .addClass('w-100 h-100 d-none text-center p-3')
         );
+        // Нужен весь срок показа, а не только сразу после show(): доступное место
+        // может измениться позже (смена сторон, resize окна, периодический
+        // пересчет высоты), и подбор должен уметь пересчитать то, что уже выведено,
+        // независимо от того, что вызвало пересчет.
+        let div = document.querySelector('#div_text');
+        Library.observeFit(div, () => Text.#fit(div));
+        Library.keepFit(div, () => Text.#shrinkIfNeeded(div));
+    }
+
+    static #fit(div) {
+        let size = 120;
+        do {
+            div.style.fontSize = size + 'px';
+            size--;
+        } while (Library.overflows(div) && size > 12);
+    }
+
+    // Шаг секундного сторожа: только уменьшить, если действительно переполнено,
+    // без сброса к максимальному размеру - иначе на каждой проверке был бы виден
+    // скачок обратно к большому кеглю перед новым уменьшением.
+    static #shrinkIfNeeded(div) {
+        if (!Library.overflows(div)) {
+            return;
+        }
+        let size = parseInt(div.style.fontSize, 10);
+        if (!size || size <= 12) {
+            return;
+        }
+        div.style.fontSize = (size - 1) + 'px';
     }
 
     async show() {
@@ -31,12 +60,12 @@ class Text {
         let message = await Text.#findMessage(this.#name);
 
         Library.setLines('#div_text', message);
-        let size = 120;
         let div = document.querySelectorAll("#div_text")[0];
-        do {
-            div.style.fontSize = size + 'px';
-            size--;
-        } while ((div.clientWidth < div.scrollWidth || div.clientHeight < div.scrollHeight) && size > 12);
+        // Пока элемент не измерим, подбор откладывается, а размер шрифта от
+        // предыдущего сообщения остается на новом контенте - если тот был короче,
+        // текст рискует выйти за пределы блока раньше, чем сработает подбор.
+        div.style.fontSize = '12px';
+        Library.whenMeasurable(div, () => Text.#fit(div));
 
         setTimeout(() => { $('#div_text').addClass('d-none'); ContentRouter.nextJob() }, config.getByName('content_text_interval'));
     }

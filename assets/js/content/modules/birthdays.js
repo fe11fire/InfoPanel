@@ -28,6 +28,20 @@ class Birthdays {
         return data;
     }
 
+    static #fit(div) {
+        let size = config.getByName('content_birthdays_max_font_size');
+        div.style.lineHeight = '1.2';
+        do {
+            div.style.fontSize = size + 'px';
+            size--;
+        } while (Library.overflows(div) && size > 10);
+        let lH = 120;
+        do {
+            div.style.lineHeight = lH + 'px';
+            lH--;
+        } while (Library.overflows(div) && lH > 12);
+    }
+
     async show() {
         $('#div_birthdays').removeClass('d-none');
         let data = this.getBirthdays(this.#name);
@@ -65,20 +79,10 @@ class Birthdays {
             )
         });
 
-        let size = config.getByName('content_birthdays_max_font_size');
         let div = document.querySelectorAll("#div_birthdays")[0];
-        div.style.lineHeight = '1.2';
-        do {
-            div.style.fontSize = size + 'px';
-            size--;
-            // debugger;
-        } while ((div.clientHeight < div.scrollHeight) && size > 10);
-        let lH = 120;
-        do {
-            div.style.lineHeight = lH + 'px';
-            lH--;
-            // debugger;
-        } while ((div.clientHeight < div.scrollHeight) && lH > 12);
+        div.style.fontSize = '10px';
+        div.style.lineHeight = '12px';
+        Library.whenMeasurable(div, () => Birthdays.#fit(div));
 
         setTimeout(() => { $('#div_birthdays').html(''); $('#div_birthdays').addClass('d-none'); ContentRouter.nextJob() }, config.getByName('content_birthdays_interval'));
     }
@@ -143,5 +147,26 @@ class Birthdays {
                 .attr('id', 'div_birthdays')
                 .addClass('w-100 h-100 d-none align-items-center py-4')
         );
+        let div = document.querySelector('#div_birthdays');
+        Library.observeFit(div, () => Birthdays.#fit(div));
+        Library.keepFit(div, () => Birthdays.#shrinkIfNeeded(div));
+    }
+
+    // Шаг секундного сторожа: уменьшаем сначала межстрочный интервал (более
+    // тонкая настройка), и только когда он уже на минимуме - размер шрифта.
+    // Без сброса к максимуму, иначе на каждой проверке был бы виден скачок.
+    static #shrinkIfNeeded(div) {
+        if (!Library.overflows(div)) {
+            return;
+        }
+        let lH = parseInt(div.style.lineHeight, 10);
+        if (lH && lH > 12) {
+            div.style.lineHeight = (lH - 1) + 'px';
+            return;
+        }
+        let size = parseInt(div.style.fontSize, 10);
+        if (size && size > 10) {
+            div.style.fontSize = (size - 1) + 'px';
+        }
     }
 }

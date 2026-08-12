@@ -110,6 +110,98 @@ class Library {
         return $('<span></span>').addClass(cssClass).append(Library.markup(value));
     }
 
+    // Сам блок с текстом почти всегда overflow:visible - обрезает содержимое его
+    // предок (в разметке приложения это #div_col_content). Ищем ближайшего предка,
+    // у которого overflow действительно не visible, то есть настоящую границу.
+    static #clipAncestor(el) {
+        let node = el.parentElement;
+        while (node) {
+            let cs = getComputedStyle(node);
+            if (cs.overflow !== 'visible' || cs.overflowY !== 'visible' || cs.overflowX !== 'visible') {
+                return node;
+            }
+            node = node.parentElement;
+        }
+        return null;
+    }
+
+    // clientHeight/scrollHeight элемента с padding для проверки переполнения не
+    // годятся сразу по двум причинам: во-первых, браузеры не включают нижний
+    // padding в scrollHeight, когда контент переполняет блок (задокументированная
+    // особенность), из-за чего реальный вылет текста систематически занижается;
+    // во-вторых, сам div почти всегда overflow:visible, поэтому его собственные
+    // размеры вообще не совпадают с точкой, где текст в итоге обрезается - это
+    // делает предок. Сравниваем фактические границы отрисованного текста (через
+    // Range, а не через clientHeight/scrollHeight) с границей того предка, который
+    // содержимое действительно обрезает.
+    static overflows(el) {
+        let clip = Library.#clipAncestor(el) || el;
+        let clipRect = clip.getBoundingClientRect();
+        let range = document.createRange();
+        range.selectNodeContents(el);
+        let rect = range.getBoundingClientRect();
+        return (rect.bottom > clipRect.bottom + 0.5) || (rect.right > clipRect.right + 0.5);
+    }
+
+    // Подбор при показе учитывает размер блока и метрики шрифта только на тот
+    // момент. После этого доступное место может поменяться - смена сторон
+    // (side_changing), изменение окна, периодический пересчет высоты по
+    // config_update_interval - а на самом первом использовании шрифта в сессии
+    // сам подбор изредка чуть оптимистичнее того, что видно кадром позже. Ни
+    // ResizeObserver (реагирует только на смену РАЗМЕРА блока, но не ловит,
+    // например, эффекты первого использования шрифта), ни разовая проверка сразу
+    // после подбора не покрывают все причины расхождения. Сторож проверяет
+    // реальное переполнение раз в секунду, пока блок виден, и просит fit
+    // пересчитать заново - так задержка до исправления ограничена ~секундой
+    // независимо от того, что именно её вызвало.
+    // ensure получает только команду "пора проверить" - решение, что именно
+    // сделать (например, уменьшить размер на шаг, без сброса к максимальному
+    // значению), остается за вызывающим кодом, чтобы секундная проверка не
+    // вызывала видимого моргания размера.
+    static keepFit(el, ensure) {
+        if (el.__fitWatchdog) {
+            return;
+        }
+        el.__fitWatchdog = setInterval(() => {
+            if (!el.classList.contains('d-none')) {
+                ensure();
+            }
+        }, 1000);
+    }
+
+    // Дополняет keepFit немедленной реакцией на изменение размера самого блока -
+    // не нужно ждать до секунды сторожа, если причина в реальном resize.
+    static observeFit(el, fit) {
+        if (el.__fitObserver) {
+            return;
+        }
+        el.__fitObserver = new ResizeObserver(() => {
+            if (!el.classList.contains('d-none')) {
+                fit();
+            }
+        });
+        el.__fitObserver.observe(el);
+    }
+
+    // Подбор размера шрифта возможен только у элемента с измеримыми размерами.
+    // Пока скрыт он сам или любой его родитель, clientHeight и scrollHeight равны
+    // нулю, условие переполнения ложно и подбор заканчивается на стартовом кегле -
+    // текст остается огромным и обрезается, как только панель станет видимой.
+    // Такой блок ждет момента, когда его можно измерить.
+    static whenMeasurable(el, fit) {
+        if (el.clientHeight > 0) {
+            fit();
+            return;
+        }
+        // Блок успел отыграть, пока оставался скрытым - подбирать уже нечего.
+        if (el.classList.contains('d-none')) {
+            return;
+        }
+        setTimeout(() => {
+            Library.whenMeasurable(el, fit);
+        }, 200);
+    }
+
     // Имя файла попадает в URL, в css url() и в атрибут style, поэтому кодируются
     // и те символы, которые encodeURIComponent оставляет как есть.
     static encodePath(name) {
