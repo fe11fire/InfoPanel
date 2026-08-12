@@ -62,44 +62,47 @@ class LineRouter {
     }
 
     static async nextLine() {
-        function hideLine(cl) {
-            $('#div_row_info_line').removeClass('is-show');
-            setTimeout(() => {
-                cl.hide();
-            }, 2000);
-
-        }
-
         await this.updateLines();
 
         Config.updateElementsSize(config);
 
         let interval = config.getByName('info_line_changing_interval');
 
-        // Показанная строка больше не первая в очереди: либо ее источник выключили
-        // или у него кончились данные, либо она уступила место другой строке не
-        // через обычную ротацию. Прячем ее сразу - иначе, если для нее не было
-        // запланировано отложенное скрытие (единственная строка, ротация ни разу
-        // не запускалась), она виснет на экране рядом с новой строкой навсегда.
-        if (LineRouter.last_line && (LineRouter.lines[0] !== LineRouter.last_line)) {
-            hideLine(LineRouter.last_line.cl);
-            LineRouter.last_line = null;
-        }
-
         if (LineRouter.lines.length == 0) {
             checkScreensaver();
         }
 
-        if (LineRouter.lines.length > 0) {
-            if (LineRouter.last_line != LineRouter.lines[0]) {
-                LineRouter.lines[0].cl.show();
-                LineRouter.last_line = LineRouter.lines[0];
-                if (LineRouter.lines.length > 1) {
-                    setTimeout(hideLine, interval - 2000, LineRouter.lines[0].cl);
-                    LineRouter.lines.push(LineRouter.lines.shift());
-                }
+        let next = (LineRouter.lines.length > 0) ? LineRouter.lines[0] : null;
+
+        // Показанная строка больше не совпадает с той, что теперь должна быть
+        // первой: сработала обычная ротация, источник отключился, или у него
+        // кончились данные. Прячем текущую и через паузу на анимацию слайда
+        // показываем следующую одной последовательной цепочкой. Раньше это были
+        // два независимых таймера с одинаковым временем срабатывания (отложенное
+        // скрытие текущей строки и следующий тик nextLine) - порядок их
+        // выполнения не гарантирован, и если тик успевал показать следующую
+        // строку первым, устаревшее скрытие гасило ее сразу после появления (оба
+        // используют один div на модуль).
+        if (next !== LineRouter.last_line) {
+            let outgoing = LineRouter.last_line;
+            LineRouter.last_line = next;
+            if (outgoing) {
+                $('#div_row_info_line').removeClass('is-show');
+                setTimeout(() => {
+                    outgoing.cl.hide();
+                    if (next) {
+                        next.cl.show();
+                    }
+                }, 2000);
+            } else if (next) {
+                next.cl.show();
             }
         }
+
+        if (LineRouter.lines.length > 1) {
+            LineRouter.lines.push(LineRouter.lines.shift());
+        }
+
         setTimeout(nextLine, interval);
     }
 
