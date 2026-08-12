@@ -30,8 +30,30 @@ function updateClock() {
         $('.digitclock p').html(moment().format('kk') + '<span class="digitclock_colon"></span>' + moment().format('mm'));
     }
 
+    fitSidebarText();
 
     // $('#dayDate').html('<b>' + moment().format('D  YYYY г.') + '<br>' + moment().format('HH:mm:ss') + '</b>');
+}
+
+// Боковая колонка узкая (col-2), и месяц/день недели/часы могут не влезать по
+// ширине - особенно длинные названия ("воскресенье", "сентября"). config еще не
+// создан на самом первом тике (clock.js подключается раньше инлайн-скрипта,
+// который его создает), поэтому до готовности конфига просто пропускаем подбор.
+function fitSidebarText() {
+    if (typeof config === 'undefined' || !config) {
+        return;
+    }
+
+    Library.fitFontSize(
+        [document.querySelector('.p_calendar_month'), document.querySelector('.p_calendar_weekday')],
+        parseInt(config.getByName('calendar_text_font_size'), 10)
+    );
+
+    let clockEl = document.querySelector('#div_clock p');
+    Library.fitFontSize([clockEl], parseInt(config.getByName('clock_size'), 10));
+    if (clockEl && clockEl.offsetParent !== null) {
+        document.documentElement.style.setProperty('--clock_size', clockEl.style.fontSize);
+    }
 }
 
 updateClock();
