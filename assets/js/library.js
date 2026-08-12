@@ -134,13 +134,17 @@ class Library {
     // делает предок. Сравниваем фактические границы отрисованного текста (через
     // Range, а не через clientHeight/scrollHeight) с границей того предка, который
     // содержимое действительно обрезает.
+    // Проверяется и верхняя граница: у текста с вертикальным центрированием
+    // переполнение растет в обе стороны от середины, а не только вниз.
     static overflows(el) {
         let clip = Library.#clipAncestor(el) || el;
         let clipRect = clip.getBoundingClientRect();
         let range = document.createRange();
         range.selectNodeContents(el);
         let rect = range.getBoundingClientRect();
-        return (rect.bottom > clipRect.bottom + 0.5) || (rect.right > clipRect.right + 0.5);
+        return (rect.bottom > clipRect.bottom + 0.5)
+            || (rect.right > clipRect.right + 0.5)
+            || (rect.top < clipRect.top - 0.5);
     }
 
     // Подбор при показе учитывает размер блока и метрики шрифта только на тот

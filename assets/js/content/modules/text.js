@@ -21,7 +21,16 @@ class Text {
         $('#div_content_area').append(
             $('<div></div>')
                 .attr('id', 'div_text')
-                .addClass('w-100 h-100 d-none text-center p-3')
+                .addClass('w-100 h-100 d-none p-3')
+                .append(
+                    // Строки выводятся во вложенный блок, чтобы центрирование по
+                    // высоте (flex на #div_text) не досталось напрямую текстовым
+                    // узлам и <br> - внутри flex-контейнера <br> ведет себя не как
+                    // перенос строки, а как отдельный flex-элемент.
+                    $('<div></div>')
+                        .attr('id', 'div_text_lines')
+                        .addClass('w-100 text-center')
+                )
         );
         // Нужен весь срок показа, а не только сразу после show(): доступное место
         // может измениться позже (смена сторон, resize окна, периодический
@@ -59,7 +68,7 @@ class Text {
 
         let message = await Text.#findMessage(this.#name);
 
-        Library.setLines('#div_text', message);
+        Library.setLines('#div_text_lines', message);
         let div = document.querySelectorAll("#div_text")[0];
         // Пока элемент не измерим, подбор откладывается, а размер шрифта от
         // предыдущего сообщения остается на новом контенте - если тот был короче,
