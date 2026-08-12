@@ -1,4 +1,5 @@
 class Birthday {
+    static name = 'birthday';
     static url = Default.backend_url + 'birthday';
 
     static prehash = 'birthday';

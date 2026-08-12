@@ -14,6 +14,9 @@ class LineRouter {
 
     static async #addLines(myClass, testData = undefined) {
         let lines = [];
+        if (!Config.isEnabled(myClass)) {
+            return lines;
+        }
         let data = await myClass.getData(
             testData
         );
@@ -72,6 +75,13 @@ class LineRouter {
         Config.updateElementsSize(config);
 
         let interval = config.getByName('info_line_changing_interval');
+
+        // Строки не осталось: либо модуль выключили, либо повод закончился.
+        // Показанную строку надо убрать, иначе она останется висеть навсегда.
+        if ((LineRouter.lines.length == 0) && (LineRouter.last_line)) {
+            hideLine(LineRouter.last_line.cl);
+            LineRouter.last_line = null;
+        }
 
         if (LineRouter.lines.length > 0) {
             if ((LineRouter.lines.length > 1) || (LineRouter.last_line != LineRouter.lines[0])) {

@@ -116,6 +116,13 @@ class Config {
         return null;
     }
 
+    // Модуль включен, пока настройка with_<name> явно не выключена: отсутствующая
+    // или испорченная настройка не должна гасить блок на работающей панели.
+    static isEnabled(myClass) {
+        let value = config.getByName('with_' + myClass.name);
+        return (value !== false) && (value !== 'false') && (value !== 0);
+    }
+
     static changeSide() {
         if ($('#div_col_info').hasClass('order-1')) {
             $('#div_col_info').removeClass('order-1');

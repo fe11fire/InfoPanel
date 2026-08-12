@@ -10,6 +10,11 @@ class ContentRouter {
 
     static async #addJobs(myClass, testData = undefined) {
         let jobs = [];
+        // Выключенный модуль не опрашивается. Пустой список задач для источника
+        // означает, что при слиянии его задачи уходят из очереди сами.
+        if (!Config.isEnabled(myClass)) {
+            return jobs;
+        }
         let data = await myClass.getData(testData);
         if (data.result) {
             data.result.forEach(e => {
