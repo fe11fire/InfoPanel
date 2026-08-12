@@ -144,6 +144,17 @@
     LineRouter.nextLine();
   }
 
+  // Показывать нечего - возвращаемся к часам, как при старте. Обратный переход
+  // делает hideScreensaver: он ждет появления контента и сам возвращает панель.
+  function checkScreensaver() {
+    if (
+      (ContentRouter.jobs.length == 0) &&
+      (LineRouter.lines.length == 0)
+    ) {
+      showScreensaver();
+    }
+  }
+
   function hideScreensaver() {
     if (
       (

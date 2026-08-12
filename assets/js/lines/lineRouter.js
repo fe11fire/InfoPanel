@@ -83,6 +83,10 @@ class LineRouter {
             LineRouter.last_line = null;
         }
 
+        if (LineRouter.lines.length == 0) {
+            checkScreensaver();
+        }
+
         if (LineRouter.lines.length > 0) {
             if ((LineRouter.lines.length > 1) || (LineRouter.last_line != LineRouter.lines[0])) {
                 LineRouter.lines[0].cl.show();

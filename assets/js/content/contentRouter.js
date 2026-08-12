@@ -77,6 +77,7 @@ class ContentRouter {
             ContentRouter.jobs.push(ContentRouter.jobs.shift());
             ContentRouter.round++;
         } else {
+            checkScreensaver();
             setTimeout(() => { ContentRouter.nextJob() }, config.getByName('jobs_restart_timeOut'));
         }
     }
