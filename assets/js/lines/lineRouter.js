@@ -76,9 +76,12 @@ class LineRouter {
 
         let interval = config.getByName('info_line_changing_interval');
 
-        // Строки не осталось: либо модуль выключили, либо повод закончился.
-        // Показанную строку надо убрать, иначе она останется висеть навсегда.
-        if ((LineRouter.lines.length == 0) && (LineRouter.last_line)) {
+        // Показанная строка больше не первая в очереди: либо ее источник выключили
+        // или у него кончились данные, либо она уступила место другой строке не
+        // через обычную ротацию. Прячем ее сразу - иначе, если для нее не было
+        // запланировано отложенное скрытие (единственная строка, ротация ни разу
+        // не запускалась), она виснет на экране рядом с новой строкой навсегда.
+        if (LineRouter.last_line && (LineRouter.lines[0] !== LineRouter.last_line)) {
             hideLine(LineRouter.last_line.cl);
             LineRouter.last_line = null;
         }
@@ -88,7 +91,7 @@ class LineRouter {
         }
 
         if (LineRouter.lines.length > 0) {
-            if ((LineRouter.lines.length > 1) || (LineRouter.last_line != LineRouter.lines[0])) {
+            if (LineRouter.last_line != LineRouter.lines[0]) {
                 LineRouter.lines[0].cl.show();
                 LineRouter.last_line = LineRouter.lines[0];
                 if (LineRouter.lines.length > 1) {
