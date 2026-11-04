@@ -3,6 +3,14 @@ class Library {
         return new Promise(resolve => setTimeout(resolve, milliseconds));
     }
 
+    static async waitForSize(element, timeout = 10000) {
+        const started = Date.now();
+        while (element.clientWidth <= 0 || element.clientHeight <= 0) {
+            if (Date.now() - started >= timeout) throw new Error('Область показа остается скрытой или не имеет размера');
+            await Library.delay(50);
+        }
+    }
+
     static stringToHash(string) {
         return string.split('').reduce((hash, char) => {
             return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;

@@ -1,0 +1,28 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><title>Проверка презентаций</title>
+<link rel="stylesheet" href="../node_modules/swiper/swiper-bundle.min.css">
+<style>body{background:#08184f;color:white;font-family:sans-serif}.d-none{display:none!important}#div_present,#swiper{width:700px;height:400px}.swiper-slide{background-size:contain;background-position:center;background-repeat:no-repeat}</style>
+<h1>Проверка реального Swiper</h1><ol id="results"></ol>
+<div id="test_host"><div id="div_present" class="d-none"><div id="swiper"></div><div id="div_present_title" class="d-none"><p></p></div></div></div>
+<script src="../node_modules/jquery/dist/jquery.min.js"></script><script src="../node_modules/swiper/swiper-bundle.min.js"></script>
+<script src="../assets/js/library.js"></script>
+<script>
+const Default={backend_url:'/'};
+const config={getByName:name=>name==='content_present_interval'?600:'../content.example/present'};
+const Request={getData:async(url,data)=>({result:data.title?[]:['Tulips.jpg','Penguins.jpg','Jellyfish.jpg','Hydrangeas.jpg']})};
+const legacy=new URLSearchParams(location.search).has('legacy');
+const RealSwiper=Swiper; let visited=[]; let measured=[];
+Swiper=class {constructor(selector,options){measured.push(document.querySelector(selector).clientWidth+'x'+document.querySelector(selector).clientHeight);if(legacy)options.autoplay.waitForTransition=true;const onChange=options.on.slideChange;options.on.slideChange=function(){visited.push(this.activeIndex);onChange();};return new RealSwiper(selector,options);}};
+</script><script src="../assets/js/content/modules/present.js"></script>
+<script>
+(async()=>{
+for(let round=1;round<=(legacy?1:2);round++)for(let effect=0;effect<3;effect++){
+const item=document.createElement('li');document.querySelector('#results').append(item);
+const label=['flip','cube','fade'][effect]+' — проход '+round;item.textContent=label+': идет проверка';
+Library.randomIntFromInterval=()=>effect;visited=[];measured=[];
+if(round===1){document.querySelector('#test_host').classList.add('d-none');setTimeout(()=>document.querySelector('#test_host').classList.remove('d-none'),1200);}
+try{await new Present('ExampleWithEmptyTitle').show();item.textContent=label+': '+(visited.includes(3)?'OK':'FAIL')+'; слайды '+visited.join(',')+'; размер при запуске '+measured.join(',');}
+catch(error){item.textContent=label+': FAIL '+error.message;}
+}
+document.title='Проверка презентаций завершена';
+})();
+</script></html>

@@ -48,6 +48,7 @@ class Present {
         let endTimer;
         let watchdog;
         let finished = false;
+        let onVisibilityChange;
         try {
             $('#div_present_title').addClass('d-none');
             const [imgs, title] = await Promise.all([
@@ -65,6 +66,9 @@ class Present {
                 $('#div_present_title').removeClass('d-none');
             }
             $('#div_present').removeClass('d-none');
+            // При первом показе родитель еще может быть скрыт заставкой.
+            // Swiper нельзя инициализировать с нулевыми размерами.
+            await Library.waitForSize(document.querySelector('#swiper'));
             await new Promise((resolve, reject) => {
                 const finish = error => {
                     if (finished) return;
@@ -78,24 +82,56 @@ class Present {
                     if (finished || endTimer !== undefined) return;
                     endTimer = setTimeout(() => finish(), interval);
                 };
-                // Суммарное время показа плюс переходы и запас. При потере
-                // событий Swiper модуль отклоняет Promise и освобождает экран.
-                watchdog = setTimeout(() => finish(new Error('Презентация «' + this.#name + '»: превышено время показа')),
-                    imgs.length * (interval + 300) + 5000);
+                let lastIndex = 0;
+                let lastProgress = Date.now();
+                onVisibilityChange = () => { lastProgress = Date.now(); };
+                document.addEventListener('visibilitychange', onVisibilityChange);
+                const observeProgress = () => {
+                    if (finished || !slider) return;
+                    const index = slider.activeIndex;
+                    if (index !== lastIndex) {
+                        lastIndex = index;
+                        lastProgress = Date.now();
+                    }
+                    if (index === imgs.length - 1) lastSlide();
+                };
+                const checkProgress = () => {
+                    if (finished) return;
+                    try {
+                        if (document.hidden) {
+                            lastProgress = Date.now();
+                            watchdog = setTimeout(checkProgress, 1000);
+                            return;
+                        }
+                        observeProgress();
+                        // Финальный слайд уже завершится своим таймером.
+                        if (endTimer !== undefined) return;
+                        const stalled = Date.now() - lastProgress;
+                        if (stalled >= interval + 300 + 5000) {
+                            finish(new Error('Презентация «' + this.#name + '»: нет перехода со слайда ' + (lastIndex + 1)));
+                            return;
+                        }
+                        watchdog = setTimeout(checkProgress, 1000);
+                    } catch (error) { finish(error); }
+                };
                 const effects = ['flip', 'cube', 'fade'];
                 slider = new Swiper('#swiper', {
                     init: false,
                     speed: 300,
                     effect: effects[Library.randomIntFromInterval(0, 2)],
                     cubeEffect: { shadow: false },
-                    autoplay: { delay: interval, stopOnLastSlide: true, disableOnInteraction: false },
-                    on: { reachEnd: lastSlide }
+                    // Эффекты cube/flip/fade могут не прислать transitionend обертки.
+                    // Следующий слайд запускается по интервалу, без ожидания этого события.
+                    autoplay: { delay: interval, waitForTransition: false, stopOnLastSlide: true, disableOnInteraction: false },
+                    on: { slideChange: observeProgress }
                 });
                 slider.init();
-                if (imgs.length === 1) lastSlide();
+                observeProgress();
+                watchdog = setTimeout(checkProgress, 1000);
             });
         } finally {
             finished = true;
+            if (onVisibilityChange) document.removeEventListener('visibilitychange', onVisibilityChange);
             clearTimeout(endTimer);
             clearTimeout(watchdog);
             try {

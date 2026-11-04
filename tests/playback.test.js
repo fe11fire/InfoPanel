@@ -9,7 +9,7 @@ function router() {
         Present: {}, Img: {}, Text: {}, Birthdays: {}, Video: {},
         PanelErrors: { report: (...args) => reports.push(args) },
         Library: { delay: () => { const wait = deferred(); waits.push(wait); return wait.promise; } },
-        config: { getByName: () => 10000 }, checkScreensaver() {}
+        config: { getByName: () => 10000 }, checkScreensaver() {}, hideScreensaver() {}
     });
     vm.runInContext(fs.readFileSync('assets/js/content/contentRouter.js', 'utf8') + '\nglobalThis.router = ContentRouter;', ctx);
     return { router: ctx.router, reports, waits };
@@ -49,14 +49,17 @@ function presentation({ slides = 2, throwInit = false, throwDestroy = false } = 
     const element = { addClass() { return this; }, removeClass() { return this; }, append() { return this; },
         css() { return this; }, empty() { return this; } };
     class FakeSwiper {
-        constructor(selector, options) { this.options = options; this.destroyed = 0; players.push(this); }
+        constructor(selector, options) { this.options = options; this.destroyed = 0; this.activeIndex = 0; players.push(this); }
         init() { if (throwInit) throw new Error('init failed'); }
         destroy() { this.destroyed++; if (throwDestroy) throw new Error('destroy failed'); }
     }
+    const visibility = { hidden: false, querySelector: () => ({}), listener: null, addEventListener(_name, fn) { this.listener = fn; }, removeEventListener() { this.listener = null; } };
     const ctx = vm.createContext({
+        document: visibility,
+        Date: class extends Date { static now() { return now; } },
         Default: { backend_url: '/' }, Swiper: FakeSwiper, $: () => element,
         config: { getByName: key => key === 'content_present_interval' ? 1000 : '../content/present' },
-        Library: { randomIntFromInterval: () => 0, contentPath: () => './content/present/', encodePath: encodeURIComponent },
+        Library: { waitForSize: async () => {}, randomIntFromInterval: () => 0, contentPath: () => './content/present/', encodePath: encodeURIComponent },
         Request: { getData: async (_url, data) => ({ result: data.title ? [] : Array.from({ length: slides }, (_, i) => i + '.jpg') }) },
         setTimeout: (fn, ms) => { const key = ++id; timers.set(key, { fn, at: now + ms }); return key; },
         clearTimeout: key => timers.delete(key)
@@ -71,22 +74,22 @@ function presentation({ slides = 2, throwInit = false, throwDestroy = false } = 
         }
         now = target;
     };
-    return { module: ctx.module, players, timers, tick };
+    return { module: ctx.module, players, timers, tick, visibility };
 }
 async function prepared(x) { const pending = x.module.show(); await new Promise(setImmediate); return { pending }; }
 test('presentation holds last slide for interval, cleans up and ignores late events', async () => {
     const x = presentation(); const { pending } = await prepared(x);
-    const p = x.players[0]; p.options.on.reachEnd(); p.options.on.reachEnd();
+    const p = x.players[0]; p.activeIndex = 1; p.options.on.slideChange(); p.options.on.slideChange();
     x.tick(1000); await pending;
     assert.equal(p.destroyed, 1); assert.equal(x.timers.size, 0);
-    p.options.on.reachEnd(); assert.equal(x.timers.size, 0);
+    p.options.on.slideChange(); assert.equal(x.timers.size, 0);
 });
 test('single slide completes, empty presentation skips and stuck presentation rejects', async () => {
     let x = presentation({ slides: 1 }); let ready = await prepared(x);
     x.tick(1000); await ready.pending; assert.equal(x.timers.size, 0);
     x = presentation({ slides: 0 }); await x.module.show(); assert.equal(x.players.length, 0);
     x = presentation(); ready = await prepared(x);
-    x.tick(7600); await assert.rejects(ready.pending, /превышено время/);
+    x.tick(7000); await assert.rejects(ready.pending, /нет перехода/);
     assert.equal(x.players[0].destroyed, 1); assert.equal(x.timers.size, 0);
 });
 test('presentation initialization and destruction errors reject after clearing timers', async () => {
@@ -94,4 +97,50 @@ test('presentation initialization and destruction errors reject after clearing t
     assert.equal(x.timers.size, 0);
     x = presentation({ slides: 1, throwDestroy: true }); const { pending } = await prepared(x);
     x.tick(1000); await assert.rejects(pending, /destroy failed/); assert.equal(x.timers.size, 0);
+});
+
+test('presentation finishes on last slide even if Swiper emits no completion events', async () => {
+    const x = presentation(); const { pending } = await prepared(x);
+    x.players[0].activeIndex = 1;
+    x.tick(2000); await pending;
+    assert.equal(x.timers.size, 0);
+});
+test('healthy slow progression can exceed old total deadline without false alarm', async () => {
+    const x = presentation({ slides: 3 }); const { pending } = await prepared(x);
+    x.tick(5000); x.players[0].activeIndex = 1; x.players[0].options.on.slideChange();
+    x.tick(5000); x.players[0].activeIndex = 2; x.players[0].options.on.slideChange();
+    x.tick(1000); await pending; assert.equal(x.timers.size, 0);
+});
+
+test('autoplay does not wait for wrapper transitionend with virtual slide effects', async () => {
+    const x = presentation({ slides: 2 }); const { pending } = await prepared(x);
+    assert.equal(x.players[0].options.autoplay.waitForTransition, false);
+    x.players[0].activeIndex = 1; x.players[0].options.on.slideChange();
+    x.tick(1000); await pending;
+});
+
+test('background tab pause does not produce a stall error and visibility handler is removed', async () => {
+    const x = presentation(); const { pending } = await prepared(x);
+    x.visibility.hidden = true; x.visibility.listener(); x.tick(30000);
+    x.visibility.hidden = false; x.visibility.listener();
+    x.tick(1000); x.players[0].activeIndex = 1; x.players[0].options.on.slideChange();
+    x.tick(1000); await pending;
+    assert.equal(x.visibility.listener, null); assert.equal(x.timers.size, 0);
+});
+
+test('layout readiness waits for visible dimensions and times out for permanently hidden area', async () => {
+    let now = 0;
+    const context = vm.createContext({ Date: class extends Date { static now() { return now; } } });
+    vm.runInContext(fs.readFileSync('assets/js/library.js', 'utf8') + '\nglobalThis.lib = Library;', context);
+    const element = { clientWidth: 0, clientHeight: 0 };
+    const gate = deferred();
+    context.lib.delay = () => gate.promise;
+    let ready = false;
+    const waiting = context.lib.waitForSize(element).then(() => ready = true);
+    await new Promise(setImmediate); assert.equal(ready, false);
+    element.clientWidth = 700; element.clientHeight = 400; gate.resolve();
+    await waiting; assert.equal(ready, true);
+    element.clientWidth = 0;
+    context.lib.delay = async () => { now += 50; };
+    await assert.rejects(context.lib.waitForSize(element, 100), /остается скрытой/);
 });

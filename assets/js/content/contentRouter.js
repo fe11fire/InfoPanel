@@ -101,6 +101,7 @@ class ContentRouter {
         ContentRouter.jobs.push(ContentRouter.jobs.shift());
         ContentRouter.round++;
         try {
+            hideScreensaver();
             // show завершается только после полного показа и очистки модуля.
             await job.cl.show();
         } catch (error) {
