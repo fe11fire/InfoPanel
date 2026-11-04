@@ -36,6 +36,7 @@ class Default {
         content_img_interval: 10000,
         content_text_interval: 10000,
         content_birthdays_interval: 10000,
+        birthday_leap_day: "less", // 29 февраля: less — 28 февраля, more — 1 марта
         content_birthdays_next_count: 5,
         content_birthdays_prev_count: 2,
         content_birthdays_max_font_size: 24, // пиксели

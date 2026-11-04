@@ -88,46 +88,24 @@ class Birthdays {
     }
 
     getBirthdays(data) {
-        let now = moment().subtract(1, 'day');
-        data.forEach(d => {
-            let occ = Library.nextBirthdayOccurrence(d.date);
-            d.moment = occ.occurrence;
-            d.diff = occ.occurrence.diff(now, 'days');
-            d.age = Library.anniversaryAge(occ.year, occ.occurrence);
-        });
-        data.sort((a, b) => a.diff - b.diff);
-
-        let name = (d) => d.age ? (d.fio + ' ( ' + d.age + ' лет )') : d.fio;
-
-        let i = 0;
-        let out = [];
-        while (
-            (i < config.getByName('content_birthdays_next_count')) &&
-            (i < data.length)
-        ) {
-            let cls = (data[i].diff == 0) ? 'today' : '';
-            out.push({
-                date: data[i].moment.format('D MMMM'),
-                name: name(data[i]),
+        const today = moment().startOf('day');
+        const birthdays = data.map(d => ({ ...d, ...Library.birthdayOccurrences(d.date, today) }));
+        const makeRow = (d, occurrence, cls) => {
+            const age = Library.anniversaryAge(d.year, occurrence);
+            return {
+                date: occurrence.format('D MMMM'),
+                name: age ? d.fio + ' ( ' + age + ' лет )' : d.fio,
                 date_class: cls,
-                name_class: cls
-            });
-            i++;
-        }
-
-        i = 0;
-        while (
-            (i < config.getByName('content_birthdays_prev_count')) &&
-            (i < data.length)
-        ) {
-            out.unshift({
-                date: data[data.length - i - 1].moment.format('D MMMM'),
-                name: name(data[data.length - i - 1]),
-                date_class: 'prev',
-                name_class: ''
-            });
-            i++;
-        }
+                name_class: cls === 'today' ? 'today' : ''
+            };
+        };
+        // Прошедшие сортируются по прошедшей дате, возраст считается на ее год.
+        const previous = birthdays.slice().sort((a, b) => b.previous.valueOf() - a.previous.valueOf())
+            .slice(0, config.getByName('content_birthdays_prev_count')).reverse();
+        const upcoming = birthdays.slice().sort((a, b) => a.next.valueOf() - b.next.valueOf())
+            .slice(0, config.getByName('content_birthdays_next_count'));
+        const out = previous.map(d => makeRow(d, d.previous, 'prev'));
+        upcoming.forEach(d => out.push(makeRow(d, d.next, d.next.isSame(today, 'day') ? 'today' : '')));
 
         return out;
     }

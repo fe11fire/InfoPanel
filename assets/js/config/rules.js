@@ -24,6 +24,7 @@ class ConfigRules {
             check: value => typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 1,
             expected: 'число от 0 до 1'
         },
+        birthday_leap_day: { check: value => ['less', 'more'].includes(value), expected: '"less" или "more"' },
         content_birthdays_next_count: { check: this.nonNegativeInteger, expected: 'целое число от 0' },
         content_birthdays_prev_count: { check: this.nonNegativeInteger, expected: 'целое число от 0' },
         line_next_birthdays_count: { check: this.nonNegativeInteger, expected: 'целое число от 0' },

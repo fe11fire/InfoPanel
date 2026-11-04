@@ -28,9 +28,9 @@ class NextBirthdays {
     // Тот же расчет ближайшей даты, что и в Birthdays (верхний список), но
     // сегодняшние именинники (diff == 0) исключаются - их показывает Birthday.
     static #nearest(data) {
-        let now = moment().subtract(1, 'day');
+        let now = moment().startOf('day');
         data.forEach(d => {
-            let occ = Library.nextBirthdayOccurrence(d.date);
+            let occ = Library.nextBirthdayOccurrence(d.date, now);
             d.moment = occ.occurrence;
             d.diff = occ.occurrence.diff(now, 'days');
             d.age = Library.anniversaryAge(occ.year, occ.occurrence);
@@ -44,7 +44,7 @@ class NextBirthdays {
 
     static makeLine(data) {
         let job = {
-            h: Library.stringToHash(this.prehash + data[0] + data[1]),
+            h: Library.stringToHash(this.prehash + JSON.stringify(data)),
             cl: new NextBirthdays(data[0], data[1], data[2]),
         }
         return job;

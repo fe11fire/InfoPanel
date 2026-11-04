@@ -24,11 +24,11 @@ class Birthday {
         if (!birthdays.result) {
             return {};
         }
-        let now = moment().subtract(1, 'day');
+        let now = moment().startOf('day');
         let todays = [];
         birthdays.result.forEach(d => {
-            let occ = Library.nextBirthdayOccurrence(d.date);
-            if (occ.occurrence.diff(now, 'days') == 0) {
+            let occ = Library.nextBirthdayOccurrence(d.date, now);
+            if (occ.occurrence.isSame(now, 'day')) {
                 todays.push([d.fio, Library.anniversaryAge(occ.year, occ.occurrence)]);
             }
         });
@@ -37,7 +37,7 @@ class Birthday {
 
     static makeLine(data) {
         let job = {
-            h: Library.stringToHash(this.prehash + data[0]),
+            h: Library.stringToHash(this.prehash + JSON.stringify(data)),
             cl: new Birthday(data[0], data[1]),
         }
         return job;

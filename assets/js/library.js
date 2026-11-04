@@ -206,18 +206,31 @@ class Library {
         }, 200);
     }
 
-    // Дата рождения приходит как "ДД.ММ" или, если известен год, "ДД.ММ.ГГГГ".
-    // Возвращает ближайшее наступление даты (в этом году, либо в следующем, если
-    // в этом году дата уже прошла) и год рождения, если он был в строке.
-    static nextBirthdayOccurrence(dateStr) {
-        let now = moment().subtract(1, 'day');
-        let parts = String(dateStr).split('.');
-        let occurrence = moment([moment().year(), parts[1] - 1, parts[0]]);
-        if (occurrence.isBefore(now)) {
-            occurrence.add(1, 'y');
+    // Каждый год рассчитывается отдельно: перенос 29 февраля не должен
+    // превращаться в постоянное 28 февраля после прибавления года к moment.
+    static birthdayInYear(dateStr, year) {
+        const [day, month] = String(dateStr).split('.').map(Number);
+        if (day === 29 && month === 2 && !moment([year]).isLeapYear()) {
+            return config.getByName('birthday_leap_day') === 'more'
+                ? moment([year, 2, 1]) : moment([year, 1, 28]);
         }
-        let year = parts.length > 2 ? parseInt(parts[2], 10) : null;
-        return { occurrence: occurrence, year: (Number.isNaN(year) ? null : year) };
+        return moment([year, month - 1, day]);
+    }
+
+    static birthdayOccurrences(dateStr, today = moment().startOf('day')) {
+        const year = String(dateStr).split('.')[2];
+        const birthYear = year ? Number(year) : null;
+        const current = Library.birthdayInYear(dateStr, today.year());
+        const next = current.isBefore(today, 'day')
+            ? Library.birthdayInYear(dateStr, today.year() + 1) : current;
+        const previous = current.isBefore(today, 'day')
+            ? current.clone() : Library.birthdayInYear(dateStr, today.year() - 1);
+        return { next, previous, year: birthYear };
+    }
+
+    static nextBirthdayOccurrence(dateStr, today = moment().startOf('day')) {
+        const dates = Library.birthdayOccurrences(dateStr, today);
+        return { occurrence: dates.next, year: dates.year };
     }
 
     // Юбилей - возраст, кратный 5. Если год рождения неизвестен или дата не
