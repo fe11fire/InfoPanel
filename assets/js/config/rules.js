@@ -13,7 +13,10 @@ class ConfigRules {
         matrix_duration: { check: this.positiveNumber, expected: 'число больше 0, мс' },
         start_timeOut: { check: this.positiveNumber, expected: 'число больше 0, мс' },
         side_changing_interval: { check: this.positiveNumber, expected: 'число больше 0, мс' },
-        config_update_interval: { check: this.positiveNumber, expected: 'число больше 0, мс' },
+        config_update_interval: {
+            check: value => typeof value === 'number' && Number.isFinite(value) && value >= 10000,
+            expected: 'число не меньше 10000 мс (10 секунд)'
+        },
         jobs_restart_timeOut: { check: this.positiveNumber, expected: 'число больше 0, мс' },
         content_present_interval: { check: this.positiveNumber, expected: 'число больше 0, мс' },
         content_img_interval: { check: this.positiveNumber, expected: 'число больше 0, мс' },
