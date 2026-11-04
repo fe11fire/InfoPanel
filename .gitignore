@@ -1,6 +1,5 @@
 vendor
 node_modules
-package-lock.json
 /content
 info
 backend/config.json
