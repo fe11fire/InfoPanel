@@ -26,12 +26,14 @@ class Img {
     }
 
     async show() {
-        $('#div_img').css('background-image', 'url(\'' + Library.contentPath(config.getByName('path_images')) + Library.encodePath(this.#name) + '\')');
-        $('#div_img').removeClass('d-none');
-
-        setTimeout(() => { $('#div_img').addClass('d-none'); ContentRouter.nextJob() }, config.getByName('content_img_interval'));
+        try {
+            $('#div_img').css('background-image', 'url("' + Library.contentPath(config.getByName('path_images')) + Library.encodePath(this.#name) + '")');
+            $('#div_img').removeClass('d-none');
+            await Library.delay(config.getByName('content_img_interval'));
+        } finally {
+            $('#div_img').addClass('d-none');
+        }
     }
-
 
     static makeJob(data) {
         let job = {

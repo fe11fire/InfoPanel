@@ -1,4 +1,8 @@
 class Library {
+    static delay(milliseconds) {
+        return new Promise(resolve => setTimeout(resolve, milliseconds));
+    }
+
     static stringToHash(string) {
         return string.split('').reduce((hash, char) => {
             return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;
@@ -193,6 +197,7 @@ class Library {
     // текст остается огромным и обрезается, как только панель станет видимой.
     // Такой блок ждет момента, когда его можно измерить.
     static whenMeasurable(el, fit) {
+        clearTimeout(el.__measureTimer);
         if (el.clientHeight > 0) {
             fit();
             return;
@@ -201,7 +206,7 @@ class Library {
         if (el.classList.contains('d-none')) {
             return;
         }
-        setTimeout(() => {
+        el.__measureTimer = setTimeout(() => {
             Library.whenMeasurable(el, fit);
         }, 200);
     }

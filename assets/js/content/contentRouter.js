@@ -1,6 +1,8 @@
 class ContentRouter {
     static jobs = [];
     static round = 1;
+    static #running = false;
+    static #firstUpdate = true;
     // static #sources = [Birthdays];
     // static #sources = [Present];
     // static #sources = [Text];
@@ -35,7 +37,6 @@ class ContentRouter {
         ContentRouter.#sources.forEach(source => {
             source.initContent();
         });
-        ContentRouter.updateJobs(true);
     }
 
     static async updateJobs(init = false) {
@@ -75,15 +76,35 @@ class ContentRouter {
         console.log(ContentRouter.jobs);
     }
 
+    static async start() {
+        if (this.#running) return;
+        this.#running = true;
+        while (this.#running) {
+            try {
+                await this.nextJob();
+            } catch (error) {
+                PanelErrors.report('content:queue', 'Ошибка обновления очереди: ' + error.message);
+                await Library.delay(config.getByName('jobs_restart_timeOut'));
+            }
+        }
+    }
+
     static async nextJob() {
-        await this.updateJobs();
-        if (ContentRouter.jobs.length > 0) {
-            ContentRouter.jobs[0].cl.show();
-            ContentRouter.jobs.push(ContentRouter.jobs.shift());
-            ContentRouter.round++;
-        } else {
+        await this.updateJobs(this.#firstUpdate);
+        this.#firstUpdate = false;
+        if (ContentRouter.jobs.length === 0) {
             checkScreensaver();
-            setTimeout(() => { ContentRouter.nextJob() }, config.getByName('jobs_restart_timeOut'));
+            await Library.delay(config.getByName('jobs_restart_timeOut'));
+            return;
+        }
+        const job = ContentRouter.jobs[0];
+        ContentRouter.jobs.push(ContentRouter.jobs.shift());
+        ContentRouter.round++;
+        try {
+            // show завершается только после полного показа и очистки модуля.
+            await job.cl.show();
+        } catch (error) {
+            PanelErrors.report('content:show:' + job.h, error.message || String(error));
         }
     }
 

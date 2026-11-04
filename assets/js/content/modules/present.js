@@ -44,87 +44,68 @@ class Present {
     }
 
     async show() {
-        $('#div_present').removeClass('d-none');
-        $('#div_present_title').addClass('d-none');
-        // Список файлов и заголовок не зависят друг от друга и запрашиваются
-        // одновременно. Для пустого каталога заголовок оказывается лишним, но это
-        // редкий случай, а выигрыш в один сетевой обмен получает каждая презентация.
-        let [imgs, title] = await Promise.all([
-            Present.#findImages(this.#name),
-            Present.#findTitle(this.#name)
-        ]);
-
-        // Завершение презентации привязано к перемотке autoplay на первый слайд.
-        // В пустом каталоге перематывать нечего, событие не наступит и панель
-        // останется с пустой областью контента - такой каталог пропускаем.
-        if (imgs.length == 0 || title === null) {
-            $('#div_present').addClass('d-none');
-            ContentRouter.nextJob();
-            return;
-        }
-
-        $('#swiper').append(
-            $('<div></div>')
-                .addClass('swiper-wrapper')
-        );
-
-        let swiper_config = {
-            autoplay: {
-                delay: config.getByName('content_present_interval'),
-            },
-            on: {
-                reachBeginning: Present.#endPresent,
-            },
-        }
-
-        switch (Library.randomIntFromInterval(1, 3)) {
-            case 1:
-                swiper_config['effect'] = 'flip';
-                break;
-            case 2:
-                swiper_config['effect'] = 'cube';
-                swiper_config['cubeEffect'] = {
-                    'shadow': false
+        let slider;
+        let endTimer;
+        let watchdog;
+        let finished = false;
+        try {
+            $('#div_present_title').addClass('d-none');
+            const [imgs, title] = await Promise.all([
+                Present.#findImages(this.#name), Present.#findTitle(this.#name)
+            ]);
+            if (!imgs.length || title === null) return;
+            const interval = config.getByName('content_present_interval');
+            const folder = Library.contentPath(config.getByName('path_present')) + Library.encodePath(this.#name) + '/';
+            const wrapper = $('<div></div>').addClass('swiper-wrapper');
+            imgs.forEach(name => wrapper.append($('<div></div>').addClass('swiper-slide')
+                .css('background-image', 'url("' + folder + Library.encodePath(name) + '")')));
+            $('#swiper').empty().append(wrapper);
+            if (title.length && title[0] !== '') {
+                Library.setLines('#div_present_title p', title);
+                $('#div_present_title').removeClass('d-none');
+            }
+            $('#div_present').removeClass('d-none');
+            await new Promise((resolve, reject) => {
+                const finish = error => {
+                    if (finished) return;
+                    finished = true;
+                    clearTimeout(endTimer);
+                    clearTimeout(watchdog);
+                    if (error) reject(error);
+                    else resolve();
                 };
-                break;
-            case 3:
-                swiper_config['effect'] = 'fade';
-                break;
-            // case 4:
-            //     swiper_config['effect'] = 'cards';
-            //     swiper_config['cardsEffect'] = {
-            //         shadow: false,
-            //         slideShadows: false,
-            //     };
-            //     break;
-            default:
-                break;
+                const lastSlide = () => {
+                    if (finished || endTimer !== undefined) return;
+                    endTimer = setTimeout(() => finish(), interval);
+                };
+                // Суммарное время показа плюс переходы и запас. При потере
+                // событий Swiper модуль отклоняет Promise и освобождает экран.
+                watchdog = setTimeout(() => finish(new Error('Презентация «' + this.#name + '»: превышено время показа')),
+                    imgs.length * (interval + 300) + 5000);
+                const effects = ['flip', 'cube', 'fade'];
+                slider = new Swiper('#swiper', {
+                    init: false,
+                    speed: 300,
+                    effect: effects[Library.randomIntFromInterval(0, 2)],
+                    cubeEffect: { shadow: false },
+                    autoplay: { delay: interval, stopOnLastSlide: true, disableOnInteraction: false },
+                    on: { reachEnd: lastSlide }
+                });
+                slider.init();
+                if (imgs.length === 1) lastSlide();
+            });
+        } finally {
+            finished = true;
+            clearTimeout(endTimer);
+            clearTimeout(watchdog);
+            try {
+                if (slider) slider.destroy(true, true);
+            } finally {
+                $('#swiper').empty();
+                $('#div_present_title').addClass('d-none');
+                $('#div_present').addClass('d-none');
+            }
         }
-
-        swiper = new Swiper('#swiper', swiper_config);
-        swiper.autoplay.stop();
-
-        let index = 1;
-        let folder = Library.contentPath(config.getByName('path_present')) + Library.encodePath(this.#name) + '/';
-        imgs.forEach(i => {
-            swiper.addSlide(index, '<div class="swiper-slide" style="background-image: url(\'' + folder + Library.encodePath(i) + '\')"></div>')
-            index++;
-        });
-
-        if (
-            (title.length > 0) &&
-            (title[0] != '')
-        ) {
-            Library.setLines('#div_present_title p', title);
-            $('#div_present_title').removeClass('d-none');
-        }
-
-        swiper.update();
-        swiper.autoplay.start();
-        if (imgs.length == 1) {
-            setTimeout(Present.#endPresent, config.getByName('content_present_interval'));
-        }
-
     }
 
     static async #findImages(folder, testData = undefined) {
@@ -167,10 +148,4 @@ class Present {
         return job;
     }
 
-    static #endPresent() {
-        swiper.destroy(false, true);
-        $('.swiper-wrapper').remove();
-        $('#div_present').addClass('d-none');
-        ContentRouter.nextJob();
-    }
 }

@@ -43,48 +43,53 @@ class Birthdays {
     }
 
     async show() {
-        $('#div_birthdays').removeClass('d-none');
-        let data = this.getBirthdays(this.#name);
-        // $('#div_birthdays').append(
-        //     $('<div></div>')
-        //         .addClass('row')
-        //         .append(
-        //             $('<p></p>')
-        //                 .html('Nearest birthdays')
-        //                 .addClass('text-center')
-        //         )
-        // );
-        data.forEach(e => {
-            $('#div_birthdays').append(
-                $('<div></div>')
-                    .addClass('row')
-                    .append(
-                        $('<div></div>')
-                            .addClass('col-3')
-                            .append(
-                                $('<p></p>')
-                                    .addClass('text-end pe-3 content_birthdays_date')
-                                    .append(Library.text(e.date, e.date_class))
-                            )
-                    )
-                    .append(
-                        $('<div></div>')
-                            .addClass('col-9')
-                            .append(
-                                $('<p></p>')
-                                    .addClass('ps-3 content_birthdays_name')
-                                    .append(Library.text(e.name, e.name_class))
-                            )
-                    )
-            )
-        });
+        try {
+            $('#div_birthdays').removeClass('d-none');
+            let data = this.getBirthdays(this.#name);
+            // $('#div_birthdays').append(
+            //     $('<div></div>')
+            //         .addClass('row')
+            //         .append(
+            //             $('<p></p>')
+            //                 .html('Nearest birthdays')
+            //                 .addClass('text-center')
+            //         )
+            // );
+            data.forEach(e => {
+                $('#div_birthdays').append(
+                    $('<div></div>')
+                        .addClass('row')
+                        .append(
+                            $('<div></div>')
+                                .addClass('col-3')
+                                .append(
+                                    $('<p></p>')
+                                        .addClass('text-end pe-3 content_birthdays_date')
+                                        .append(Library.text(e.date, e.date_class))
+                                )
+                        )
+                        .append(
+                            $('<div></div>')
+                                .addClass('col-9')
+                                .append(
+                                    $('<p></p>')
+                                        .addClass('ps-3 content_birthdays_name')
+                                        .append(Library.text(e.name, e.name_class))
+                                )
+                        )
+                )
+            });
 
-        let div = document.querySelectorAll("#div_birthdays")[0];
-        div.style.fontSize = '10px';
-        div.style.lineHeight = '12px';
-        Library.whenMeasurable(div, () => Birthdays.#fit(div));
+            let div = document.querySelectorAll("#div_birthdays")[0];
+            div.style.fontSize = '10px';
+            div.style.lineHeight = '12px';
+            Library.whenMeasurable(div, () => Birthdays.#fit(div));
 
-        setTimeout(() => { $('#div_birthdays').html(''); $('#div_birthdays').addClass('d-none'); ContentRouter.nextJob() }, config.getByName('content_birthdays_interval'));
+            await Library.delay(config.getByName('content_birthdays_interval'));
+        } finally {
+            clearTimeout(document.querySelector('#div_birthdays')?.__measureTimer);
+            $('#div_birthdays').addClass('d-none').empty();
+        }
     }
 
     getBirthdays(data) {

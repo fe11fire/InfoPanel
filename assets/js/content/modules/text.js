@@ -64,25 +64,30 @@ class Text {
     }
 
     async show() {
-        $('#div_text').removeClass('d-none');
+        try {
+            $('#div_text').removeClass('d-none');
 
-        let message = await Text.#findMessage(this.#name);
+            let message = await Text.#findMessage(this.#name);
 
-        if (message.length === 0) {
-            $('#div_text_lines').empty();
+            if (message.length === 0) {
+                $('#div_text_lines').empty();
+                $('#div_text').addClass('d-none');
+                return;
+            }
+            Library.setLines('#div_text_lines', message);
+            let div = document.querySelectorAll("#div_text")[0];
+            // Пока элемент не измерим, подбор откладывается, а размер шрифта от
+            // предыдущего сообщения остается на новом контенте - если тот был короче,
+            // текст рискует выйти за пределы блока раньше, чем сработает подбор.
+            div.style.fontSize = '12px';
+            Library.whenMeasurable(div, () => Text.#fit(div));
+
+            await Library.delay(config.getByName('content_text_interval'));
+        } finally {
+            clearTimeout(document.querySelector('#div_text')?.__measureTimer);
             $('#div_text').addClass('d-none');
-            ContentRouter.nextJob();
-            return;
+            $('#div_text_lines').empty();
         }
-        Library.setLines('#div_text_lines', message);
-        let div = document.querySelectorAll("#div_text")[0];
-        // Пока элемент не измерим, подбор откладывается, а размер шрифта от
-        // предыдущего сообщения остается на новом контенте - если тот был короче,
-        // текст рискует выйти за пределы блока раньше, чем сработает подбор.
-        div.style.fontSize = '12px';
-        Library.whenMeasurable(div, () => Text.#fit(div));
-
-        setTimeout(() => { $('#div_text').addClass('d-none'); ContentRouter.nextJob() }, config.getByName('content_text_interval'));
     }
 
     static async #findMessage(name, testData = undefined) {

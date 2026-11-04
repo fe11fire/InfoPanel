@@ -5,10 +5,10 @@ const vm = require('node:vm');
 function setup() {
     let path = '../content/imgs';
     let background;
-    const element = { css: (name, value) => { background = value; return element; }, removeClass: () => element };
+    const element = { css: (name, value) => { background = value; return element; }, addClass: () => element, removeClass: () => element };
     const context = vm.createContext({
         Default: { backend_url: '/' }, config: { getByName: () => path },
-        $: () => element, setTimeout() {}
+        $: () => element, setTimeout(fn) { fn(); }
     });
     vm.runInContext(fs.readFileSync('assets/js/library.js', 'utf8') + '\n' + fs.readFileSync('assets/js/content/modules/img.js', 'utf8')
         + '\nglobalThis.api = { Library, Img };', context);

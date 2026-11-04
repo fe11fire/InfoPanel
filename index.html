@@ -106,10 +106,6 @@
 
 </body>
 
-<script>
-  var player;
-  var swiper;
-</script>
 <script type="text/javascript" src="assets/js/library.js"></script>
 <script type="text/javascript" src="assets/js/errors.js"></script>
 <script type="text/javascript" src="assets/js/request.js"></script>
@@ -137,18 +133,14 @@
     ContentRouter.initContent();
     LineRouter.initContent();
     if (config.getByName('matrix_enable')) {
-      config.getMatrix().screenSaveFunc(randomManage, config.getByName('start_timeOut'));
+      config.getMatrix().screenSaveFunc(() => ContentRouter.start(), config.getByName('start_timeOut'));
     } else {
-      setTimeout(randomManage, config.getByName('start_timeOut'));
+      setTimeout(() => ContentRouter.start(), config.getByName('start_timeOut'));
     }
     setTimeout(nextLine, config.getByName('start_timeOut'));
     setTimeout(hideScreensaver, config.getByName('start_timeOut'));
   });
 
-
-  function randomManage() {
-    ContentRouter.nextJob();
-  }
 
   function nextLine() {
     LineRouter.nextLine();
