@@ -19,6 +19,9 @@ class Default {
 
     //Все таймеры в милисекундах 3600000 - час, 72000000 - полдня
     static system = {
+        request_timeout: 5000, // Максимальное ожидание API, мс
+        error_ttl: 300000, // Время жизни ошибки после последнего повтора, мс
+        show_errors: true, // Иконка ошибок
         matrix_enable: false, // Включение заставки Матрицы при смене экрана
         matrix_duration: 2000, // Длительность заставки Матрицы при переходе
         start_timeOut: 3000, //пауза перед показом контента, лучше чтобы была, так как идет асинхронная подгрузка очереди в процедурном стиле кода
@@ -27,6 +30,7 @@ class Default {
         config_update_interval: 20000,
         jobs_restart_timeOut: 10000,
         header_text: '',
+        video_stall_timeout: 15000, // Пропуск видео без прогресса, мс
         content_video_volume: 0.5, //content video volume form 0 to 1
         content_present_interval: 10000,
         content_img_interval: 10000,

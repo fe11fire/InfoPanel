@@ -1,6 +1,6 @@
 class Config {
     static empty = true;
-    #data;
+    #data = {};
     #m; //Матрица
     #exp; //Параметр для отладки. Время начала работы скрипта.
     #t_side_changing;
@@ -30,7 +30,13 @@ class Config {
             showScreensaver();
             console.log('empty config');
         }
-        this.#data = data;
+        const showErrors = this.#data.show_errors;
+        const errorTtl = this.#data.error_ttl;
+        this.#data = Config.empty ? {} : ConfigRules.validate(data);
+        if (Config.empty && showErrors !== undefined) this.#data.show_errors = showErrors;
+        if (Config.empty && errorTtl !== undefined) this.#data.error_ttl = errorTtl;
+        PanelErrors.enabled = this.getByName('show_errors');
+        PanelErrors.setTtl(this.getByName('error_ttl'));
     }
 
     getByName(name) {
@@ -42,6 +48,9 @@ class Config {
         }
         if (this.isset(Default.css[name])) {
             return Default.css[name]
+        }
+        if (['path_video', 'path_images', 'path_present'].includes(name)) {
+            return '../' + Default.paths[name];
         }
         console.log('Config ' + name + ' not found');
         return null;

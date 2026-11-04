@@ -17,14 +17,19 @@ class LineRouter {
         if (!Config.isEnabled(myClass)) {
             return lines;
         }
-        let data = await myClass.getData(
-            testData
-        );
+        try {
+            let data = await myClass.getData(
+                testData
+            );
 
-        if (data.result) {
-            data.result.forEach(e => {
-                lines.push(myClass.makeLine(e));
-            });
+            if (data.result) {
+                data.result.forEach(e => {
+                    lines.push(myClass.makeLine(e));
+                });
+            }
+        } catch (error) {
+            PanelErrors.report('line:' + myClass.name, error.message);
+            return [];
         }
         return lines;
     }

@@ -4,7 +4,6 @@ class Img {
     static request_data = {};
     static prehash = this.name;
 
-    #folder = Default.paths.path_images + '/';
     #name = '';
     constructor(name) {
         this.#name = name;
@@ -27,7 +26,7 @@ class Img {
     }
 
     async show() {
-        $('#div_img').css('background-image', 'url(\'' + this.#folder + Library.encodePath(this.#name) + '\')');
+        $('#div_img').css('background-image', 'url(\'' + Library.contentPath(config.getByName('path_images')) + Library.encodePath(this.#name) + '\')');
         $('#div_img').removeClass('d-none');
 
         setTimeout(() => { $('#div_img').addClass('d-none'); ContentRouter.nextJob() }, config.getByName('content_img_interval'));

@@ -232,6 +232,22 @@ class Library {
 
     // Имя файла попадает в URL, в css url() и в атрибут style, поэтому кодируются
     // и те символы, которые encodeURIComponent оставляет как есть.
+    // Пути backend/config.json отсчитываются от каталога backend.
+    static contentPath(value) {
+        if (typeof value !== 'string' || !value.trim() || /^(?:[a-z]+:|[\\/])/i.test(value)) {
+            throw new Error('ожидался относительный путь внутри сайта');
+        }
+        const parts = ['backend'];
+        for (const part of value.replace(/\\/g, '/').split('/')) {
+            if (!part || part === '.') continue;
+            if (part === '..') {
+                if (!parts.length) throw new Error('каталог находится за пределами сайта');
+                parts.pop();
+            } else parts.push(part);
+        }
+        return './' + parts.map(part => Library.encodePath(part)).join('/') + (parts.length ? '/' : '');
+    }
+
     static encodePath(name) {
         return encodeURIComponent(name).replace(/['()!*]/g, function (c) {
             return '%' + c.charCodeAt(0).toString(16).toUpperCase();

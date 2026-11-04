@@ -26,6 +26,13 @@
 </head>
 
 <body>
+  <div id="panel_error" hidden role="img" aria-label="Ошибка панели. Подробности в консоли браузера">
+    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M16 2 31 29H1Z" fill="#ffcc00" stroke="#302500" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M16 11v9" stroke="#302500" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="16" cy="25" r="1.7" fill="#302500"/>
+    </svg>
+  </div>
   <div class="container-fluid h-100">
 
     <canvas class="w-100 h-100 position-absolute d-none" id="canvas"></canvas>
@@ -104,8 +111,10 @@
   var swiper;
 </script>
 <script type="text/javascript" src="assets/js/library.js"></script>
+<script type="text/javascript" src="assets/js/errors.js"></script>
 <script type="text/javascript" src="assets/js/request.js"></script>
 <script type="text/javascript" src="assets/js/config/default.js"></script>
+<script type="text/javascript" src="assets/js/config/rules.js"></script>
 <script type="text/javascript" src="assets/js/config/config.js"></script>
 <script type="text/javascript" src="assets/js/clock.js"></script>
 <script type="text/javascript" src="assets/js/content/modules/video.js"></script>

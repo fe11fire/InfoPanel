@@ -4,7 +4,6 @@ class Present {
     static request_data = {};
     static prehash = this.name;
 
-    #folder = Default.paths.path_present + '/';
     #name = '';
     constructor(name) {
         this.#name = name;
@@ -58,7 +57,7 @@ class Present {
         // Завершение презентации привязано к перемотке autoplay на первый слайд.
         // В пустом каталоге перематывать нечего, событие не наступит и панель
         // останется с пустой областью контента - такой каталог пропускаем.
-        if (imgs.length == 0) {
+        if (imgs.length == 0 || title === null) {
             $('#div_present').addClass('d-none');
             ContentRouter.nextJob();
             return;
@@ -106,7 +105,7 @@ class Present {
         swiper.autoplay.stop();
 
         let index = 1;
-        let folder = this.#folder + Library.encodePath(this.#name) + '/';
+        let folder = Library.contentPath(config.getByName('path_present')) + Library.encodePath(this.#name) + '/';
         imgs.forEach(i => {
             swiper.addSlide(index, '<div class="swiper-slide" style="background-image: url(\'' + folder + Library.encodePath(i) + '\')"></div>')
             index++;
@@ -151,6 +150,7 @@ class Present {
                 title: 'true'
             },
             testData);
+        if (data.failed) return null;
         if (data.result) {
             data.result.forEach(e => {
                 title.push(e);

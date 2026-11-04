@@ -15,13 +15,18 @@ class ContentRouter {
         if (!Config.isEnabled(myClass)) {
             return jobs;
         }
-        let data = await myClass.getData(testData);
-        if (data.result) {
-            data.result.forEach(e => {
-                if (this.#filterExtension(myClass, e)) {
-                    jobs.push(myClass.makeJob(e));
-                }
-            });
+        try {
+            let data = await myClass.getData(testData);
+            if (data.result) {
+                data.result.forEach(e => {
+                    if (this.#filterExtension(myClass, e)) {
+                        jobs.push(myClass.makeJob(e));
+                    }
+                });
+            }
+        } catch (error) {
+            PanelErrors.report('content:' + myClass.name, error.message);
+            return [];
         }
         return jobs;
     }

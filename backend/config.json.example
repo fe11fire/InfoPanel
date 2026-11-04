@@ -10,6 +10,9 @@
     "path_text": "..\\content\\text",
     "path_images": "..\\content\\imgs",
 
+    "request_timeout": 5000,
+    "error_ttl": 300000,
+    "show_errors": true,
     "matrix_enable": false,
     "matrix_duration": 2000,
     "start_timeOut": 3000,
@@ -18,6 +21,7 @@
     "config_update_interval": 10000,
     "jobs_restart_timeOut": 10000,
     "header_text": "COMPANY NAME",
+    "video_stall_timeout": 15000,
     "content_video_volume": 0,
     "content_present_interval": 10000,
     "content_img_interval": 10000,

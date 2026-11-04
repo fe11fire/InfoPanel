@@ -15,7 +15,7 @@ class Birthdays {
             Birthdays.request_data,
             testData
         );
-        if (!birthdays.result) {
+        if (birthdays.failed || !birthdays.result || birthdays.result.length === 0) {
             return {};
         }
         let data = { result: [[]] };

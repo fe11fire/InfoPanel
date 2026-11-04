@@ -3,12 +3,7 @@ class Video {
     static url = Default.backend_url + this.name;
     static request_data = {};
     static prehash = this.name;
-    static player;
-    // Завершение может прийти дважды: по событию ended и по таймауту ошибки,
-    // а второй destroy() ломает разметку плеера и запускает лишнюю ветку ротации.
-    static #ended = false;
 
-    #folder = Default.paths.path_video + '/';
     #name = '';
     constructor(name) {
         this.#name = name;
@@ -23,50 +18,80 @@ class Video {
     }
 
     async show() {
-        // Plyr пересоздает элемент <video> при установке source, поэтому id="player"
-        // после первого показа в DOM отсутствует. Если положиться на элемент из
-        // initContent, повторный new Plyr не найдет медиа, player.volume упадет и
-        // оборвет show() вместе со всей ротацией - собираем элемент заново.
-        $('#div_player').html(Video.#makeMedia());
-        Video.#ended = false;
-
-        player = new Plyr('#player', {
-            loadSprite: false
-        });
-
-        player.on('ended', (event) => {
-            Video.#endVideo(player)
-        });
-
-        player.source = {
-            type: 'video',
-            storage: { enabled: false },
-            sources: [{
-                src: this.#folder + Library.encodePath(this.#name),
-                type: 'video/mp4',
-            },],
+        // Состояние и таймеры принадлежат одному показу. Поздние события старого
+        // плеера не могут завершить следующий ролик или запустить вторую очередь.
+        let mediaPlayer;
+        let finished = false;
+        let started = false;
+        let startTimer;
+        let progressTimer;
+        let lastPosition = 0;
+        let lastProgress = Date.now();
+        const fail = reason => finish(reason);
+        const finish = reason => {
+            if (finished) return;
+            finished = true;
+            clearTimeout(startTimer);
+            clearTimeout(progressTimer);
+            if (reason) PanelErrors.report('video:' + this.#name, 'Видео «' + this.#name + '»: ' + reason);
+            try {
+                if (mediaPlayer) mediaPlayer.destroy();
+            } catch (error) {
+                PanelErrors.report('video:' + this.#name, 'Видео «' + this.#name + '»: ошибка закрытия плеера: ' + error.message);
+            } finally {
+                $('#div_player').addClass('d-none');
+                randomManage();
+            }
         };
-
-        player.volume = config.getByName('content_video_volume');
-        $('#div_player').removeClass('d-none');
-
-        let errorCancelTimeout = setTimeout(() => { Video.#endVideo(player) }, 5000);
-
-        player.on('playing', (event) => {
-            clearTimeout(errorCancelTimeout);
-        });
-
-        player.play();
-    }
-
-    static #endVideo(player) {
-        if (Video.#ended) {
-            return;
+        const checkProgress = () => {
+            if (finished) return;
+            const now = Date.now();
+            const position = Number(mediaPlayer.currentTime);
+            if (Number.isFinite(position) && position > lastPosition) {
+                lastPosition = position;
+                lastProgress = now;
+            }
+            const configured = Number(config.getByName('video_stall_timeout'));
+            const timeout = Number.isFinite(configured) && configured > 0 ? configured : 15000;
+            if (started && now - lastProgress >= timeout) {
+                fail('нет прогресса воспроизведения ' + timeout + ' мс');
+                return;
+            }
+            progressTimer = setTimeout(checkProgress, Math.min(1000, timeout));
+        };
+        try {
+            $('#div_player').html(Video.#makeMedia());
+            mediaPlayer = new Plyr('#player', { loadSprite: false });
+            player = mediaPlayer;
+            mediaPlayer.on('ended', () => finish());
+            mediaPlayer.on('error', () => {
+                const code = mediaPlayer.media?.error?.code;
+                fail('ошибка плеера' + (code ? ' (код ' + code + ')' : ''));
+            });
+            mediaPlayer.on('playing', () => {
+                if (finished || started) return;
+                started = true;
+                clearTimeout(startTimer);
+                lastPosition = Number(mediaPlayer.currentTime) || 0;
+                lastProgress = Date.now();
+                progressTimer = setTimeout(checkProgress, 0);
+            });
+            startTimer = setTimeout(() => fail('воспроизведение не началось за 5000 мс'), 5000);
+            mediaPlayer.source = {
+                type: 'video',
+                storage: { enabled: false },
+                sources: [{ src: Library.contentPath(config.getByName('path_video')) + Library.encodePath(this.#name), type: 'video/mp4' }]
+            };
+            if (finished) return;
+            mediaPlayer.volume = config.getByName('content_video_volume');
+            $('#div_player').removeClass('d-none');
+            const playing = mediaPlayer.play();
+            if (playing && typeof playing.catch === 'function') {
+                playing.catch(error => fail('не удалось начать воспроизведение: ' + (error?.message || 'неизвестная ошибка')));
+            }
+        } catch (error) {
+            fail('ошибка запуска: ' + error.message);
         }
-        Video.#ended = true;
-        player.destroy();
-        $('#div_player').addClass('d-none');
-        randomManage();
     }
 
     static makeJob(data) {

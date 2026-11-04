@@ -68,6 +68,12 @@ class Text {
 
         let message = await Text.#findMessage(this.#name);
 
+        if (message.length === 0) {
+            $('#div_text_lines').empty();
+            $('#div_text').addClass('d-none');
+            ContentRouter.nextJob();
+            return;
+        }
         Library.setLines('#div_text_lines', message);
         let div = document.querySelectorAll("#div_text")[0];
         // Пока элемент не измерим, подбор откладывается, а размер шрифта от
