@@ -27,6 +27,7 @@ class Matrix {
     }
 
     start() {
+        this.c.classList.remove('d-none');
         $('canvas').addClass('is-show');
         return setInterval(this.step, 1, this);
     }
