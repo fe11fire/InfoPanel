@@ -1,7 +1,7 @@
 class Default {
     static backend = {
-        server_ip: "127.0.0.1",
-        server_port: 8084,
+        server_ip: globalThis.InfoPanelClient?.server_ip ?? "127.0.0.1",
+        server_port: globalThis.InfoPanelClient?.server_port ?? 8084,
     }
 
     static paths = {
