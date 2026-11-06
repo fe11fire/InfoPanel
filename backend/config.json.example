@@ -37,7 +37,7 @@
     "line_next_birthdays_count": 5,
 
     "with_present": true,
-    "with_pdf": false,
+    "with_pdf": true,
     "with_imgs": true,
     "with_text": true,
     "with_birthdays": true,

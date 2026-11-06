@@ -48,7 +48,7 @@ class Default {
         // Выключенный модуль не опрашивает backend и убирается из очереди.
         with_present: true,
         with_imgs: true,
-        with_pdf: false,
+        with_pdf: true,
         with_text: true,
         with_birthdays: true,
         with_video: true,
