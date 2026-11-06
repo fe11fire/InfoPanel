@@ -108,7 +108,8 @@ class Present {
                         if (endTimer !== undefined) return;
                         const stalled = Date.now() - lastProgress;
                         if (stalled >= interval + 300 + 5000) {
-                            finish(new Error('Презентация «' + this.#name + '»: нет перехода со слайда ' + (lastIndex + 1)));
+                            finish(new Error('нет перехода со слайда №' + (lastIndex + 1) +
+                                ' («' + imgs[lastIndex] + '») за ' + stalled + ' мс'));
                             return;
                         }
                         watchdog = setTimeout(checkProgress, 1000);
@@ -129,6 +130,9 @@ class Present {
                 observeProgress();
                 watchdog = setTimeout(checkProgress, 1000);
             });
+        } catch (error) {
+            throw new Error('Презентация «' + this.#name + '»: ' + (error.message || String(error)) +
+                '. Проверьте папку из path_present в backend/config.json и ошибки Swiper в консоли.', { cause: error });
         } finally {
             finished = true;
             if (onVisibilityChange) document.removeEventListener('visibilitychange', onVisibilityChange);
@@ -154,6 +158,13 @@ class Present {
             data.result.forEach(e => {
                 imgs.push(e);
             });
+        }
+        const sort = config.getByName('content_present_sort');
+        if (sort === 'asc' || sort === 'desc') {
+            const collator = new Intl.Collator('ru', { numeric: true });
+            const direction = sort === 'asc' ? 1 : -1;
+            imgs.sort((first, second) => direction * (collator.compare(first, second)
+                || (first < second ? -1 : Number(first > second))));
         }
         return imgs;
     }

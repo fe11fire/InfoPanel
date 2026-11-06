@@ -27,7 +27,10 @@ function setup() {
         clearTimeout: id => timers.delete(id),
         URLSearchParams, console: { log: (...args) => logs.push(args) },
         document: { getElementById: () => icon },
-        config: { getByName: key => ({ request_timeout: 25, content_extensions_ignore: { common: ['bak'] } })[key] },
+        config: { getByName: key => ({
+            request_timeout: 25,
+            content_extensions_ignore: { common: ['bak', 'db'], imgs: ['txt'], present: ['txt'] }
+        })[key] },
         $: { ajax: o => options.push(o) }
     });
     vm.runInContext(fs.readFileSync('assets/js/errors.js', 'utf8') + '\n' + fs.readFileSync('assets/js/request.js', 'utf8') +
@@ -60,13 +63,39 @@ test('timeout, HTTP and parser errors complete with empty data', async () => {
         assert.equal(x.icon.hidden, false);
     }
 });
-test('empty lists are valid; invalid items and birthday dates are rejected', async () => {
+test('request diagnostics distinguish connection errors from invalid content responses', async () => {
+    const x = setup();
+    const settings = x.Request.getData('http://panel:8084/config');
+    x.options[0].error({ status: 0 }, 'timeout');
+    await settings;
+    assert.match(x.logs[0][3], /POST http:\/\/panel:8084\/config.*25 мс.*переключается на часы.*client\.js/);
+
+    const slides = x.Request.getData('/present', { path: 'Новости', title: 'true' });
+    x.options[1].success({ result: [42] });
+    await slides;
+    assert.match(x.logs[1][3], /Новости.*title\.txt.*№1.*path_present.*backend\/config\.json/);
+});
+test('empty lists are valid; invalid video items are rejected', async () => {
     const x = setup();
     assert.equal((await x.Request.getData('/video', {}, [])).result.length, 0);
     assert.equal(x.icon.hidden, true);
     assert.equal((await x.Request.getData('/video', {}, [42])).failed, true);
-    assert.equal((await x.Request.getData('/birthdays', {}, [{ date: '31.02', fio: 'Test' }])).failed, true);
-    assert.equal((await x.Request.getData('/birthdays', {}, [{ date: '29.02', fio: 'Test' }])).result.length, 1);
+});
+test('invalid birthday records are reported without dropping valid records', async () => {
+    const x = setup();
+    const valid = { date: '29.02', fio: 'Test' };
+    const invalid = { date: '31.02', fio: 'Test' };
+    const response = await x.Request.getData('/birthdays', {}, [valid, invalid, null]);
+    assert.equal(response.failed, undefined);
+    assert.equal(response.result.length, 1);
+    assert.equal(response.result[0], valid);
+    assert.match(x.logs[0][3], /№2.*некорректная дата/);
+    assert.match(x.logs[1][3], /№3.*поля fio и date/);
+    assert.equal(x.icon.hidden, false);
+    await x.Request.getData('/birthdays', {}, [valid, invalid, null]);
+    assert.equal(x.logs.length, 2);
+    x.tick(300000);
+    assert.equal(x.icon.hidden, true);
 });
 test('one failing source does not prevent another source completing', async () => {
     const x = setup();
@@ -102,15 +131,26 @@ test('filters file names but preserves message text; config format is checked', 
     assert.equal((await retry).show_errors, false);
 });
 
+test('file lists apply common and module exclusions regardless of extension case', async () => {
+    const x = setup();
+    const files = ['Thumbs.DB', 'notes.TXT', 'photo.JPG'];
+    for (const [route, data] of [['/imgs', {}], ['/img', {}], ['/present', { path: 'Slides' }]]) {
+        const { result } = await x.Request.getData(route, data, files);
+        assert.deepEqual(Array.from(result), ['photo.JPG']);
+    }
+    assert.equal((await x.Request.getData('/text', {}, ['notes.TXT'])).result.length, 1);
+    assert.equal((await x.Request.getData('/present', { path: 'Slides', title: 'true' }, ['notes.TXT'])).result.length, 1);
+});
+
 test('routers remove failed sources, keep healthy sources and restore on recovery', async () => {
     const x = setup();
     let failing = false;
     const context = vm.createContext({
         console: { log() {} }, PanelErrors: x.PanelErrors,
-        Config: { isEnabled: () => true },
+        Config: { isEnabled: source => source.name !== 'pdf' },
         config: { getByName: () => ({ common: [] }) }
     });
-    for (const name of ['Present', 'Img', 'Text', 'Birthdays', 'Video', 'Birthday', 'NextBirthdays']) {
+    for (const name of ['Present', 'Img', 'Text', 'Birthdays', 'Video', 'Pdf', 'Birthday', 'NextBirthdays']) {
         context[name] = {
             name: name.toLowerCase(),
             async getData() {

@@ -49,7 +49,7 @@ class Config {
         if (this.isset(Default.css[name])) {
             return Default.css[name]
         }
-        if (['path_video', 'path_images', 'path_present'].includes(name)) {
+        if (['path_video', 'path_images', 'path_present', 'path_pdf'].includes(name)) {
             return '../' + Default.paths[name];
         }
         console.log('Config ' + name + ' not found');

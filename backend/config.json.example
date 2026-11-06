@@ -3,6 +3,7 @@
     "server_port": 8084,
     "path_video": "..\\content\\video",
     "path_present": "..\\content\\present",
+    "path_pdf": "..\\content\\pdf",
     "path_birthday": "..\\content\\birthday",
     "file_birthday": "birthday.txt",
     "path_holiday": "..\\content\\holiday",
@@ -24,6 +25,8 @@
     "video_stall_timeout": 15000,
     "content_video_volume": 0,
     "content_present_interval": 10000,
+    "content_present_sort": "default",
+    "content_pdf_interval": 10000,
     "content_img_interval": 10000,
     "content_text_interval": 10000,
     "content_birthdays_interval": 10000,
@@ -34,6 +37,7 @@
     "line_next_birthdays_count": 5,
 
     "with_present": true,
+    "with_pdf": false,
     "with_imgs": true,
     "with_text": true,
     "with_birthdays": true,
@@ -42,7 +46,9 @@
     "with_next_birthdays": true,
 
     "content_extensions_ignore": {
-        "common": [],
+        "common": ["db", "ini", "ds_store", "tmp", "temp", "bak", "swp", "lnk", "url", "part", "crdownload"],
+        "imgs": ["txt"],
+        "present": ["txt"],
         "video": [],
         "text": []
     },

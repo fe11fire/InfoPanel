@@ -22,6 +22,7 @@ class Video {
             // Состояние и таймеры принадлежат одному показу. Поздние события старого
             // плеера не могут завершить следующий ролик или запустить вторую очередь.
             let mediaPlayer;
+            let source;
             let finished = false;
             let started = false;
             let startTimer;
@@ -41,7 +42,9 @@ class Video {
                 } finally {
                     try { $('#div_player').addClass('d-none'); }
                     catch (error) { reason = reason || error.message; }
-                    if (reason) reject(new Error('Видео «' + this.#name + '»: ' + reason));
+                    if (reason) reject(new Error('Видео «' + this.#name + '»: ' + reason + '. ' +
+                        (source ? 'Путь в браузере: ' + source + '. ' : '') +
+                        'Проверьте доступ к файлу, воспроизведение в этом браузере и path_video в backend/config.json.'));
                     else resolve();
                 }
             };
@@ -80,10 +83,11 @@ class Video {
                     progressTimer = setTimeout(checkProgress, 0);
                 });
                 startTimer = setTimeout(() => fail('воспроизведение не началось за 5000 мс'), 5000);
+                source = Library.contentPath(config.getByName('path_video')) + Library.encodePath(this.#name);
                 mediaPlayer.source = {
                     type: 'video',
                     storage: { enabled: false },
-                    sources: [{ src: Library.contentPath(config.getByName('path_video')) + Library.encodePath(this.#name), type: 'video/mp4' }]
+                    sources: [{ src: source, type: 'video/mp4' }]
                 };
                 if (finished) return;
                 mediaPlayer.volume = config.getByName('content_video_volume');

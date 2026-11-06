@@ -6,7 +6,7 @@ function deferred() { let resolve; const promise = new Promise(r => resolve = r)
 function router() {
     const reports = [], waits = [];
     const ctx = vm.createContext({ console: { log() {} },
-        Present: {}, Img: {}, Text: {}, Birthdays: {}, Video: {},
+        Present: {}, Img: {}, Text: {}, Birthdays: {}, Video: {}, Pdf: {},
         PanelErrors: { report: (...args) => reports.push(args) },
         Library: { delay: () => { const wait = deferred(); waits.push(wait); return wait.promise; } },
         config: { getByName: () => 10000 }, checkScreensaver() {}, hideScreensaver() {}
@@ -143,4 +143,35 @@ test('layout readiness waits for visible dimensions and times out for permanentl
     element.clientWidth = 0;
     context.lib.delay = async () => { now += 50; };
     await assert.rejects(context.lib.waitForSize(element, 100), /остается скрытой/);
+});
+
+test('PDF shows all pages in order and cleans up after the last page', async () => {
+    const paths = [1, 2].map(number => '.infopanel-pdf-cache/' + 'a'.repeat(64) + '/page-000' + number + '.png');
+    const displayed = [], waits = [];
+    let hidden = true, current;
+    const container = {
+        empty() { current = undefined; return this; },
+        append(image) { current = image; displayed.push(image.src); return this; },
+        addClass() { hidden = true; return this; },
+        removeClass() { hidden = false; return this; }
+    };
+    const ctx = vm.createContext({
+        Default: { backend_url: '/' },
+        Request: { getData: async () => ({ result: paths }) },
+        Library: { contentPath: () => './content/pdf/', delay: ms => { waits.push(ms); } },
+        config: { getByName: name => name === 'content_pdf_interval' ? 1234 : '../content/pdf' },
+        Image: class {
+            style = {};
+            set src(url) { this.url = url; this.onload(); }
+            get src() { return this.url; }
+        },
+        $: () => container,
+        setTimeout, clearTimeout
+    });
+    vm.runInContext(fs.readFileSync('assets/js/content/modules/pdf.js', 'utf8') + '\nglobalThis.pdf = new Pdf("test.pdf");', ctx);
+    await ctx.pdf.show();
+    assert.deepEqual(displayed, paths.map(path => './content/pdf/' + path));
+    assert.deepEqual(waits, [1234, 1234]);
+    assert.equal(hidden, true);
+    assert.equal(current, undefined);
 });

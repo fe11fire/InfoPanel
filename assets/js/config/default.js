@@ -7,6 +7,7 @@ class Default {
     static paths = {
         path_video: "content/video",
         path_present: "content/present",
+        path_pdf: "content/pdf",
         path_birthday: "content/birthday",
         file_birthday: "birthday.txt",
         path_holiday: "content/holiday",
@@ -33,7 +34,9 @@ class Default {
         video_stall_timeout: 15000, // Пропуск видео без прогресса, мс
         content_video_volume: 0.5, //content video volume form 0 to 1
         content_present_interval: 10000,
+        content_present_sort: "default",
         content_img_interval: 10000,
+        content_pdf_interval: 10000,
         content_text_interval: 10000,
         content_birthdays_interval: 10000,
         birthday_leap_day: "less", // 29 февраля: less — 28 февраля, more — 1 марта
@@ -45,6 +48,7 @@ class Default {
         // Выключенный модуль не опрашивает backend и убирается из очереди.
         with_present: true,
         with_imgs: true,
+        with_pdf: false,
         with_text: true,
         with_birthdays: true,
         with_video: true,
@@ -52,7 +56,9 @@ class Default {
         with_next_birthdays: true, // строка с ближайшими ДР
         // Ключи, кроме common, должны совпадать со статическим name модуля контента
         content_extensions_ignore: {
-            "common": [],
+            "common": ["db", "ini", "ds_store", "tmp", "temp", "bak", "swp", "lnk", "url", "part", "crdownload"],
+            "imgs": ["txt"],
+            "present": ["txt"],
             "video": [],
             "text": []
         },

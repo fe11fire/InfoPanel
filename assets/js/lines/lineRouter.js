@@ -28,7 +28,9 @@ class LineRouter {
                 });
             }
         } catch (error) {
-            PanelErrors.report('line:' + myClass.name, error.message);
+            PanelErrors.report('line:' + myClass.name,
+                'Информационная строка «' + myClass.name + '»: не удалось подготовить данные для показа. ' +
+                'Строка пропущена. Причина: ' + (error.message || String(error)));
             return [];
         }
         return lines;

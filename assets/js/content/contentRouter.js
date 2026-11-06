@@ -7,7 +7,7 @@ class ContentRouter {
     // static #sources = [Present];
     // static #sources = [Text];
     // static #sources = [Video];
-    static #sources = [Present, Img, Text, Birthdays, Video];
+    static #sources = [Present, Img, Text, Birthdays, Video, Pdf];
 
 
     static async #addJobs(myClass, testData = undefined) {
@@ -21,13 +21,15 @@ class ContentRouter {
             let data = await myClass.getData(testData);
             if (data.result) {
                 data.result.forEach(e => {
-                    if (this.#filterExtension(myClass, e)) {
+                    if (typeof e === 'string' || Array.isArray(e)) {
                         jobs.push(myClass.makeJob(e));
                     }
                 });
             }
         } catch (error) {
-            PanelErrors.report('content:' + myClass.name, error.message);
+            PanelErrors.report('content:' + myClass.name,
+                'Модуль «' + myClass.name + '»: не удалось подготовить элементы для очереди. ' +
+                'Элементы этого модуля пропущены. Причина: ' + (error.message || String(error)));
             return [];
         }
         return jobs;
@@ -105,7 +107,8 @@ class ContentRouter {
             // show завершается только после полного показа и очистки модуля.
             await job.cl.show();
         } catch (error) {
-            PanelErrors.report('content:show:' + job.h, error.message || String(error));
+            PanelErrors.report('content:show:' + job.h,
+                'Не удалось показать элемент. Очередь продолжится. Причина: ' + (error.message || String(error)));
         }
     }
 
@@ -118,22 +121,4 @@ class ContentRouter {
         }
     }
 
-    static #filterExtension(myClass, fileName) {
-        if (Array.isArray(fileName)){
-            return true;
-        }
-        if (typeof fileName !== 'string'){
-            return false;
-        }
-        let ignore = config.getByName('content_extensions_ignore');
-        let ext = fileName.split('.');
-        ext = (ext.length == 1) ? '' : ext[ext.length - 1];
-        return (
-            (!ignore['common'].includes(ext)) &&
-            (
-                (!ignore[myClass.name]) ||
-                (!ignore[myClass.name].includes(ext))
-            )
-        );
-    }
 }

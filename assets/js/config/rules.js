@@ -19,6 +19,11 @@ class ConfigRules {
         },
         jobs_restart_timeOut: { check: this.positiveNumber, expected: 'число больше 0, мс' },
         content_present_interval: { check: this.positiveNumber, expected: 'число больше 0, мс' },
+        content_present_sort: {
+            check: value => ['default', 'asc', 'desc'].includes(value),
+            expected: '"default", "asc" или "desc"'
+        },
+        content_pdf_interval: { check: this.positiveNumber, expected: 'число больше 0, мс' },
         content_img_interval: { check: this.positiveNumber, expected: 'число больше 0, мс' },
         content_text_interval: { check: this.positiveNumber, expected: 'число больше 0, мс' },
         content_birthdays_interval: { check: this.positiveNumber, expected: 'число больше 0, мс' },
@@ -36,6 +41,7 @@ class ConfigRules {
         matrix_enable: { check: this.boolean, expected: 'true или false' },
         side_changing: { check: this.boolean, expected: 'true или false' },
         with_present: { check: this.boolean, expected: 'true или false' },
+        with_pdf: { check: this.boolean, expected: 'true или false' },
         with_imgs: { check: this.boolean, expected: 'true или false' },
         with_text: { check: this.boolean, expected: 'true или false' },
         with_birthdays: { check: this.boolean, expected: 'true или false' },
@@ -45,6 +51,7 @@ class ConfigRules {
         header_text: { check: this.string, expected: 'строка' },
         path_video: { check: this.path, expected: 'относительный путь внутри сайта от каталога backend' },
         path_images: { check: this.path, expected: 'относительный путь внутри сайта от каталога backend' },
+        path_pdf: { check: this.path, expected: 'относительный путь внутри сайта от каталога backend' },
         path_present: { check: this.path, expected: 'относительный путь внутри сайта от каталога backend' },
         content_extensions_ignore: {
             check: value => value && typeof value === 'object' && !Array.isArray(value) && Array.isArray(value.common)
@@ -84,7 +91,8 @@ class ConfigRules {
                 delete settings[name];
                 PanelErrors.report('config:' + name,
                     'Настройка ' + name + ': получено ' + JSON.stringify(value) +
-                    '. Ожидается ' + rule.expected + '. Используется значение по умолчанию.');
+                    '. Ожидается ' + rule.expected + '. Исправьте ключ «' + name +
+                    '» в backend/config.json. Пока используется значение по умолчанию.');
             }
         }
         return settings;
