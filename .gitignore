@@ -4,3 +4,4 @@ node_modules
 info
 backend/config.json
 .osp
+.claude/
