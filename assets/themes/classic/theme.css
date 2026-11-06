@@ -1,0 +1,18 @@
+/* Исходная компоновка classic. Обновлены только шрифты. */
+:root {
+  color-scheme: dark;
+  --font_header: Arial, sans-serif;
+  --font_body: Arial, sans-serif;
+  --font_display: Arial, sans-serif;
+}
+html[data-theme="classic"] .p_calendar_day {
+  font-family: var(--font_display);
+  font-weight: 400;
+}
+html[data-theme="classic"] .p_calendar_month,
+html[data-theme="classic"] .p_calendar_weekday { font-family: var(--font_body); font-weight: 400; }
+html[data-theme="classic"] #div_birthday p,
+html[data-theme="classic"] #div_next_birthday p { font-family: var(--font_body); }
+html[data-theme="classic"] .span_birthday_name,
+html[data-theme="classic"] .span_next_birthday_name,
+html[data-theme="classic"] .span_next_birthday_date { font-family: var(--font_display); }

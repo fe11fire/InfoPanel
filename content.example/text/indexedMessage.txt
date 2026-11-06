@@ -1,3 +1,4 @@
-﻿Attention!
-This is test message
-indexed by InfoPanel
+<span style="font-size:40%;letter-spacing:3px">СОБЫТИЯ КОМАНДЫ</span>
+<b>Встречаемся в пятницу</b>
+<span style="font-size:55%">Общее собрание команды</span>
+<span style="font-size:55%">15:00 · Конференц-зал</span>

@@ -20,6 +20,7 @@ class Default {
 
     //Все таймеры в милисекундах 3600000 - час, 72000000 - полдня
     static system = {
+        theme: 'classic',
         request_timeout: 5000, // Максимальное ожидание API, мс
         error_ttl: 300000, // Время жизни ошибки после последнего повтора, мс
         show_errors: true, // Иконка ошибок
@@ -76,7 +77,7 @@ class Default {
         header_font_size: '26px',
         header_color: '#fff',
         info_line_background_color: 'linear-gradient(#08184f, #9198e5)',
-        info_line_height: '40px',
+        info_line_height: '76px',
         logo_width: '100px',
         calendar_color: '#fff',
         calendar_day_font_size: '75px',

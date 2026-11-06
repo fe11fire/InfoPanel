@@ -1,0 +1,26 @@
+/* Скопируйте папку template под своим именем, например my-theme.
+   В config.json задайте "theme": "my-theme". Все ресурсы храните локально.
+   Не заданные здесь переменные наследуют базовые значения classic. */
+:root {
+  color-scheme: dark;
+  --background_color: #152335;
+  --header_color: #f5f8ff;
+  --calendar_color: #f5f8ff;
+  --clock_color: #9bc5ff;
+  --birthday_color: #f5f8ff;
+  --birthday_name_color: #9bc5ff;
+  --content_text_color: #f5f8ff;
+  --content_text_background_color: #1e3048;
+  --content_birthdays_name_color: #f5f8ff;
+  --content_birthdays_date_color: #9bc5ff;
+  --content_birthdays_date_prev_color: #a0aec0;
+  --content_birthdays_date_today_color: #9bc5ff;
+  --content_birthdays_name_today_color: #9bc5ff;
+  --info_line_background_color: #1e3048;
+  --info_line_height: 76px;
+  --panel_surface: #1e3048;
+  --panel_border: #405773;
+  --panel_accent: #9bc5ff;
+  --panel_muted: #a0b4ce;
+  --panel_radius: 12px;
+}

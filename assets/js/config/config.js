@@ -47,6 +47,7 @@ class Config {
             return Default.system[name]
         }
         if (this.isset(Default.css[name])) {
+            if (typeof Themes !== 'undefined' && this.isset(Themes.values[name])) return Themes.values[name];
             return Default.css[name]
         }
         if (['path_video', 'path_images', 'path_present', 'path_pdf'].includes(name)) {
@@ -63,6 +64,7 @@ class Config {
     async updateConfig() {
         // console.log(moment().diff(this.#exp, 'seconds') + ' - updateConfig');
         await this.init();
+        await Themes.apply(this.getByName('theme'));
 
         if (this.getByName('matrix_enable')) {
             if (!this.#m) {

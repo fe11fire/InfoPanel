@@ -1,0 +1,78 @@
+/* Общие детали новых тем. classic сохраняет прежнее оформление. */
+:root:where(:not([data-theme="classic"])) {
+  --font_body: Arial, sans-serif;
+  --font_header: Arial, sans-serif;
+  --font_display: Arial, sans-serif;
+  --font_clock: Consolas, monospace;
+  --panel_surface: #18202c;
+  --panel_border: #364152;
+  --panel_accent: #8bb9fa;
+  --panel_muted: #a6b4c8;
+  --panel_radius: 18px;
+}
+
+html:not([data-theme="classic"]) body { font-family: var(--font_body); }
+html:not([data-theme="classic"]) #div_header {
+  border-bottom: 2px solid var(--panel_accent);
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+  font-weight: 700;
+  letter-spacing: .025em;
+}
+html:not([data-theme="classic"]) #div_header p { text-align: left !important; }
+html:not([data-theme="classic"]) #div_content_area { padding-top: 20px; padding-bottom: 16px; }
+html:not([data-theme="classic"]) #div_col_info { padding-right: 20px; gap: 12px; }
+html:not([data-theme="classic"]) #div_col_info.order-1 { padding-left: 0; padding-right: 24px; }
+html:not([data-theme="classic"]) #div_col_content.order-2 + #div_col_info { padding-left: 0; }
+html:not([data-theme="classic"]) #div_logo,
+html:not([data-theme="classic"]) #div_calendar,
+html:not([data-theme="classic"]) #div_clock {
+  margin: 0;
+  padding: 20px 6px;
+  background: var(--panel_surface);
+  border: 1px solid var(--panel_border);
+  border-radius: var(--panel_radius);
+}
+html:not([data-theme="classic"]) #div_logo img { max-width: 100%; object-fit: contain; }
+html:not([data-theme="classic"]) .p_calendar_day { font-weight: 400; letter-spacing: -.065em; }
+html:not([data-theme="classic"]) .p_calendar_month,
+html:not([data-theme="classic"]) .p_calendar_weekday { font-weight: 400; }
+html:not([data-theme="classic"]) .p_calendar_weekday { color: var(--panel_muted); }
+html:not([data-theme="classic"]) #div_clock p { font-variant-numeric: tabular-nums; letter-spacing: -.06em; }
+html:not([data-theme="classic"]) .digitclock_colon { width: .35em; padding-left: 0; }
+html:not([data-theme="classic"]) #div_text,
+html:not([data-theme="classic"]) #div_birthdays,
+html:not([data-theme="classic"]) #div_img,
+html:not([data-theme="classic"]) #div_present,
+html:not([data-theme="classic"]) #div_pdf {
+  border: 1px solid var(--panel_border);
+  border-radius: var(--panel_radius);
+  overflow: hidden;
+}
+html:not([data-theme="classic"]) #div_birthdays { background: var(--panel_surface); }
+html:not([data-theme="classic"]) .content_birthdays_name { text-shadow: none; }
+html:not([data-theme="classic"]) .content_birthdays_date,
+html:not([data-theme="classic"]) .content_birthdays_name { line-height: 1.35; }
+html:not([data-theme="classic"]) #div_info_line { border-top: 1px solid var(--panel_border); }
+html:not([data-theme="classic"]) #div_birthday { background-image: none !important; }
+html:not([data-theme="classic"]) .span_birthday_name,
+html:not([data-theme="classic"]) .span_next_birthday_name,
+html:not([data-theme="classic"]) .span_next_birthday_date { letter-spacing: 0; font-weight: 600; }
+html:not([data-theme="classic"]) #div_present_title {
+  background: linear-gradient(transparent, #000c);
+  padding: 20px 0;
+}
+html:not([data-theme="classic"]) #div_present_title p { font-family: var(--font_body); text-shadow: 0 2px 4px #000; }
+html:not([data-theme="classic"]) .clock { border: 2px solid var(--panel_accent); box-shadow: 0 0 50px #0002; }
+html:not([data-theme="classic"]) .hr::before,
+html:not([data-theme="classic"]) .sc::before { background: var(--panel_accent); }
+html:not([data-theme="classic"]) .mn::before { background: var(--calendar_color); }
+@media (max-height: 700px) {
+  html:not([data-theme="classic"]) #div_logo,
+  html:not([data-theme="classic"]) #div_calendar,
+  html:not([data-theme="classic"]) #div_clock { padding-top: 10px; padding-bottom: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-theme="classic"]) * { animation: none !important; }
+}

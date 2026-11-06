@@ -1,0 +1,34 @@
+:root {
+  color-scheme: dark;
+  --background_color: #07121c;
+  --header_color: #e0f7ff;
+  --header_font_size: 30px;
+  --calendar_color: #e0f7ff;
+  --clock_color: #5de5f4;
+  --birthday_color: #c3d9e7;
+  --birthday_name_color: #5de5f4;
+  --content_text_color: #e0f7ff;
+  --content_text_background_color: #0b1d2b;
+  --content_birthdays_name_color: #e0f7ff;
+  --content_birthdays_date_color: #5de5f4;
+  --content_birthdays_date_prev_color: #748ea3;
+  --content_birthdays_date_today_color: #5de5f4;
+  --content_birthdays_name_today_color: #5de5f4;
+  --info_line_background_color: #0b1d2b;
+  --info_line_height: 76px;
+  --panel_surface: #0b1d2b;
+  --panel_border: #234659;
+  --panel_accent: #5de5f4;
+  --panel_muted: #7f9fb3;
+  --panel_radius: 3px;
+  --font_header: Consolas, monospace;
+  --font_display: Consolas, monospace;
+}
+html[data-theme="hi-tech"] body {
+  background-image: linear-gradient(#5de5f407 1px, transparent 1px), linear-gradient(90deg, #5de5f407 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+html[data-theme="hi-tech"] #div_header { text-transform: uppercase; text-shadow: 0 0 18px #5de5f433; }
+html[data-theme="hi-tech"] #div_clock { border-left: 3px solid var(--panel_accent); box-shadow: inset 0 0 28px #5de5f408; }
+html[data-theme="hi-tech"] #div_clock p { text-shadow: 0 0 18px #5de5f440; }
+html[data-theme="hi-tech"] #div_calendar { border-top: 3px solid var(--panel_accent); }

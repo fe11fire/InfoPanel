@@ -1,0 +1,29 @@
+:root {
+  color-scheme: light;
+  --background_color: #eee8db;
+  --header_color: #24231f;
+  --header_font_size: 38px;
+  --header_height: 96px;
+  --calendar_color: #24231f;
+  --clock_color: #24231f;
+  --birthday_color: #24231f;
+  --birthday_name_color: #b23e2c;
+  --content_text_color: #24231f;
+  --content_text_background_color: #faf7f0;
+  --content_birthdays_name_color: #24231f;
+  --content_birthdays_date_color: #b23e2c;
+  --content_birthdays_date_prev_color: #827768;
+  --content_birthdays_date_today_color: #b23e2c;
+  --content_birthdays_name_today_color: #b23e2c;
+  --info_line_background_color: #e5dece;
+  --info_line_height: 76px;
+  --panel_surface: #faf7f0;
+  --panel_border: #bdb4a2;
+  --panel_accent: #b23e2c;
+  --panel_muted: #71695c;
+  --panel_radius: 0px;
+  --font_header: Georgia, 'Times New Roman', serif;
+  --font_display: Georgia, 'Times New Roman', serif;
+}
+html[data-theme="editorial"] #div_header { border-bottom: 4px double #24231f; letter-spacing: -.025em; }
+html[data-theme="editorial"] #div_calendar { border-top: 5px solid var(--panel_accent); }

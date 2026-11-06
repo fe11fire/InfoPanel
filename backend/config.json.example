@@ -1,4 +1,5 @@
 {
+    "theme": "classic",
     "server_ip": "127.0.0.1",
     "server_port": 8084,
     "path_video": "..\\content\\video",
@@ -53,26 +54,5 @@
         "text": []
     },
 
-    "info_line_changing_interval": 10000,
-    "info_line_height": "80px",
-    "info_line_background_color": "linear-gradient(#08184f, #9198e5)",
-
-    "cursor": "default",
-    "background_color": "#08184f",
-    "padding_top": "20px",
-    "padding_bottom": "20px",
-    "padding_left": "10px",
-    "padding_right": "50px",
-    "header_height": "80px",
-    "header_font_size": "26px",
-    "header_color": "#fff",
-    "logo_width": "100px",
-    "calendar_color": "#fff",
-    "calendar_day_font_size": "105px",
-    "calendar_text_font_size": "35px",
-    "clock_color": "#fff",
-    "clock_size": "50px",
-    "birthday_name_font_size": "30px",
-    "birthday_text_font_size": "24px",
-    "birthday_color": "#fff"
+    "info_line_changing_interval": 10000
 }

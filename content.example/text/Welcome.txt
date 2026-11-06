@@ -1,0 +1,4 @@
+<span style="font-size:40%;letter-spacing:3px">РАДЫ ВАС ВИДЕТЬ</span>
+<b>Хороший день начинается вместе</b>
+<span style="font-size:55%">Новости, события и важное — на одном экране</span>
+<span style="font-size:45%">Остаемся на связи внутри нашей сети</span>

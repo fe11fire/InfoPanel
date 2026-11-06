@@ -7,6 +7,8 @@ class ConfigRules {
 
     // Стандартные значения хранятся только в Default. Здесь — ограничения.
     static rules = {
+        theme: { check: value => typeof value === 'string' && /^[a-z][a-z0-9_-]{0,47}$/.test(value),
+            expected: 'имя папки темы: строчная латинская буква, затем буквы, цифры, _ или -, до 48 символов' },
         request_timeout: { check: this.positiveNumber, expected: 'число больше 0, мс' },
         error_ttl: { check: this.positiveNumber, expected: 'число больше 0, мс' },
         video_stall_timeout: { check: this.positiveNumber, expected: 'число больше 0, мс' },
