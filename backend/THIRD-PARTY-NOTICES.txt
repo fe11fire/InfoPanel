@@ -1,4 +1,4 @@
-Third-party notices for backend-new.exe
+Third-party notices for backend.exe
 
 Go standard library
 ===================

@@ -52,7 +52,7 @@ class Pdf {
             const response = await fetch(url, { signal: AbortSignal.timeout(30000) });
             if (!response.ok) throw new Error('Сервер вернул HTTP ' + response.status + ' для ' + url);
             if (!response.headers.get('Content-Type')?.startsWith('application/pdf')) {
-                throw new Error('Сервер не вернул PDF. Проверьте версию backend-new.exe');
+                throw new Error('Сервер не вернул PDF. Проверьте версию backend.exe');
             }
             task = engine.open(new Uint8Array(await response.arrayBuffer()));
             const pdf = await Pdf.#wait(task.promise, 'открытие документа');
