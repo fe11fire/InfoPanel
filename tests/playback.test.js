@@ -145,33 +145,54 @@ test('layout readiness waits for visible dimensions and times out for permanentl
     await assert.rejects(context.lib.waitForSize(element, 100), /остается скрытой/);
 });
 
-test('PDF shows all pages in order and cleans up after the last page', async () => {
-    const paths = [1, 2].map(number => '.infopanel-pdf-cache/' + 'a'.repeat(64) + '/page-000' + number + '.png');
+test('PDF draws pages in order and releases the browser renderer after the last page', async () => {
     const displayed = [], waits = [];
-    let hidden = true, current;
+    let hidden = true, destroyed = false, current;
     const container = {
-        empty() { current = undefined; return this; },
-        append(image) { current = image; displayed.push(image.src); return this; },
-        addClass() { hidden = true; return this; },
-        removeClass() { hidden = false; return this; }
+        parentElement: { clientWidth: 800, clientHeight: 600 },
+        replaceChildren(canvas) {
+            current = canvas;
+            if (canvas) displayed.push(canvas.page);
+        },
+        classList: {
+            add() { hidden = true; },
+            remove() { hidden = false; }
+        }
     };
     const ctx = vm.createContext({
         Default: { backend_url: '/' },
-        Request: { getData: async () => ({ result: paths }) },
-        Library: { contentPath: () => './content/pdf/', delay: ms => { waits.push(ms); } },
-        config: { getByName: name => name === 'content_pdf_interval' ? 1234 : '../content/pdf' },
-        Image: class {
-            style = {};
-            set src(url) { this.url = url; this.onload(); }
-            get src() { return this.url; }
+        fetch: async url => {
+            assert.equal(url, '/pdf?name=test.pdf');
+            return {
+                ok: true, headers: { get: () => 'application/pdf' },
+                arrayBuffer: async () => new Uint8Array([37, 80, 68, 70]).buffer
+            };
         },
-        $: () => container,
-        setTimeout, clearTimeout
+        InfoPanelPdf: { open: () => ({
+            promise: Promise.resolve({
+                numPages: 2,
+                getPage: async page => ({
+                    getViewport: ({ scale }) => ({ width: 300 * scale, height: 400 * scale }),
+                    render: ({ canvas }) => {
+                        canvas.page = page;
+                        return { promise: Promise.resolve() };
+                    },
+                    cleanup() {}
+                })
+            }),
+            destroy() { destroyed = true; }
+        }) },
+        document: { getElementById: () => container, createElement: () => ({ style: {} }) },
+        window: { devicePixelRatio: 1 },
+        Library: { delay: ms => { waits.push(ms); } },
+        config: { getByName: () => 1234 },
+        URLSearchParams, AbortSignal, setTimeout, clearTimeout
     });
     vm.runInContext(fs.readFileSync('assets/js/content/modules/pdf.js', 'utf8') + '\nglobalThis.pdf = new Pdf("test.pdf");', ctx);
     await ctx.pdf.show();
-    assert.deepEqual(displayed, paths.map(path => './content/pdf/' + path));
+    assert.deepEqual(displayed, [1, 2]);
     assert.deepEqual(waits, [1234, 1234]);
     assert.equal(hidden, true);
     assert.equal(current, undefined);
+    assert.equal(destroyed, true);
 });

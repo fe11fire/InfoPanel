@@ -17,7 +17,6 @@ import (
 
 type backend struct {
 	dir string
-	pdf *pdfRenderer
 }
 
 type settings struct {
@@ -194,7 +193,7 @@ func (b backend) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	case "/pdf":
 		if name := arg("name"); name != "" {
-			writeJSON(w, b.pdf.pages(b.contentPath(cfg.PDF), name))
+			servePDF(w, r, b.contentPath(cfg.PDF), name)
 			return
 		}
 		result = withContent(b, cfg.PDF, pdfList)
@@ -257,7 +256,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	b := backend{dir: filepath.Dir(executable), pdf: &pdfRenderer{}}
+	b := backend{dir: filepath.Dir(executable)}
 	cfg, _, err := b.readConfig()
 	if err != nil {
 		log.Fatalf("read %s: %v", filepath.Join(b.dir, "config.json"), err)

@@ -1,96 +1,56 @@
 package main
 
 import (
-	"bytes"
-	"fmt"
-	"image/png"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
 	"os"
 	"path/filepath"
 	"testing"
-	"time"
 )
 
-func TestPDFPagesCache(t *testing.T) {
+func TestPDFReadOnlyAPI(t *testing.T) {
 	dir := t.TempDir()
+	pdf := "%PDF-1.4\nfixture"
 	name := "Объявление.PDF"
-	path := filepath.Join(dir, name)
-	if err := os.WriteFile(path, twoPagePDF(), 0644); err != nil {
-		t.Fatal(err)
-	}
-	renderer := &pdfRenderer{}
-	waitForPages := func() []string {
-		t.Helper()
-		deadline := time.Now().Add(45 * time.Second)
-		for time.Now().Before(deadline) {
-			reply := renderer.pages(dir, name)
-			if reply.Error != "" {
-				t.Fatal(reply.Error)
-			}
-			if !reply.Pending {
-				return reply.Result
-			}
-			time.Sleep(20 * time.Millisecond)
-		}
-		t.Fatal("timed out waiting for PDF conversion")
-		return nil
-	}
-	pages := waitForPages()
-	if len(pages) != 2 {
-		t.Fatalf("expected two pages, got %v", pages)
-	}
-	for i, page := range pages {
-		if filepath.Base(page) != pageName(i+1) {
-			t.Fatalf("unexpected page order: %v", pages)
-		}
-		file, err := os.Open(filepath.Join(dir, filepath.FromSlash(page)))
-		if err != nil {
+	for file, data := range map[string]string{
+		"config.json": `{"path_pdf":"."}`,
+		name:          pdf,
+		"notes.txt":   "ignored",
+	} {
+		if err := os.WriteFile(filepath.Join(dir, file), []byte(data), 0644); err != nil {
 			t.Fatal(err)
 		}
-		img, err := png.DecodeConfig(file)
-		file.Close()
-		if err != nil || img.Width == 0 || img.Height == 0 {
-			t.Fatalf("invalid rendered PNG %s: %v", page, err)
+	}
+	b := backend{dir: dir}
+	list := httptest.NewRecorder()
+	b.ServeHTTP(list, httptest.NewRequest(http.MethodPost, "/pdf", nil))
+	if list.Code != http.StatusOK || list.Body.String() != "{\"result\":[\"Объявление.PDF\"]}\n" {
+		t.Fatalf("unexpected list: %d %s", list.Code, list.Body.String())
+	}
+	for _, tc := range []struct {
+		method, name string
+		want         int
+	}{
+		{http.MethodGet, name, http.StatusOK},
+		{http.MethodPost, name, http.StatusMethodNotAllowed},
+		{http.MethodGet, "missing.pdf", http.StatusNotFound},
+		{http.MethodGet, "../secret.pdf", http.StatusBadRequest},
+		{http.MethodGet, "notes.txt", http.StatusBadRequest},
+	} {
+		response := httptest.NewRecorder()
+		b.ServeHTTP(response, httptest.NewRequest(tc.method, "/pdf?name="+url.QueryEscape(tc.name), nil))
+		if response.Code != tc.want {
+			t.Fatalf("%s %s: got %d, want %d", tc.method, tc.name, response.Code, tc.want)
+		}
+		if tc.want == http.StatusOK && (response.Body.String() != pdf ||
+			response.Header().Get("Content-Type") != "application/pdf" ||
+			response.Header().Get("Access-Control-Allow-Origin") != "*") {
+			t.Fatalf("unexpected PDF response: %v %s", response.Header(), response.Body.String())
 		}
 	}
-	if reply := renderer.pages(dir, name); reply.Pending || len(reply.Result) != 2 || reply.Result[0] != pages[0] {
-		t.Fatalf("expected cached pages, got %+v", reply)
+	entries, err := os.ReadDir(dir)
+	if err != nil || len(entries) != 3 {
+		t.Fatalf("PDF requests changed the content directory: %v %v", entries, err)
 	}
-	if reply := renderer.pages(dir, "../secret.pdf"); reply.Error == "" {
-		t.Fatal("expected traversal to be rejected")
-	}
-
-	// A new version of the source must use a different cache directory.
-	if err := os.WriteFile(path, append(twoPagePDF(), '\n'), 0644); err != nil {
-		t.Fatal(err)
-	}
-	updated := waitForPages()
-	if len(updated) != 2 || updated[0] == pages[0] {
-		t.Fatalf("expected a fresh cache version, got %v", updated)
-	}
-	if renderer.pool != nil {
-		t.Cleanup(func() { renderer.pool.Close() })
-	}
-}
-
-func twoPagePDF() []byte {
-	objects := []string{
-		"<< /Type /Catalog /Pages 2 0 R >>",
-		"<< /Type /Pages /Count 2 /Kids [3 0 R 4 0 R] >>",
-		"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 120 180] /Resources << >> >>",
-		"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 180 120] /Resources << >> >>",
-	}
-	var pdf bytes.Buffer
-	pdf.WriteString("%PDF-1.4\n")
-	offsets := make([]int, 0, len(objects))
-	for i, object := range objects {
-		offsets = append(offsets, pdf.Len())
-		fmt.Fprintf(&pdf, "%d 0 obj\n%s\nendobj\n", i+1, object)
-	}
-	xref := pdf.Len()
-	fmt.Fprintf(&pdf, "xref\n0 %d\n0000000000 65535 f \n", len(objects)+1)
-	for _, offset := range offsets {
-		fmt.Fprintf(&pdf, "%010d 00000 n \n", offset)
-	}
-	fmt.Fprintf(&pdf, "trailer\n<< /Size %d /Root 1 0 R >>\nstartxref\n%d\n%%%%EOF\n", len(objects)+1, xref)
-	return pdf.Bytes()
 }

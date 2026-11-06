@@ -5,5 +5,12 @@
     "moment": "2.29.4",
     "plyr": "3.7.8",
     "swiper": "10.2.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "pdfjs-dist": "6.5.438"
+  },
+  "scripts": {
+    "build:pdf": "node scripts/build-pdf.cjs"
   }
 }
