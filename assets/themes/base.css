@@ -52,8 +52,7 @@ html:not([data-theme="classic"]) #div_pdf {
 }
 html:not([data-theme="classic"]) #div_birthdays { background: var(--panel_surface); }
 html:not([data-theme="classic"]) .content_birthdays_name { text-shadow: none; }
-html:not([data-theme="classic"]) .content_birthdays_date,
-html:not([data-theme="classic"]) .content_birthdays_name { line-height: 1.35; }
+/* Интервал строк дней рождения наследуется от модуля: он подбирает его по высоте. */
 html:not([data-theme="classic"]) #div_info_line { border-top: 1px solid var(--panel_border); }
 html:not([data-theme="classic"]) #div_birthday { background-image: none !important; }
 html:not([data-theme="classic"]) .span_birthday_name,
