@@ -47,6 +47,7 @@ class Library {
         'text-transform': /^(none|uppercase|lowercase|capitalize)$/i,
         'letter-spacing': /^-?\d+(\.\d+)?(px|pt|em|rem)$/i,
         'text-align': /^(left|right|center|justify|start|end)$/i,
+        'text-indent': /^-?(0|\d+(\.\d+)?(px|pt|em|rem|%))$/i,
         'vertical-align': /^(baseline|top|middle|bottom|sub|super|text-top|text-bottom)$/i,
         'line-height': /^(normal|\d+(\.\d+)?(px|pt|em|rem|%)?)$/i,
         'margin': /^(auto|0|\d+(\.\d+)?(px|pt|em|rem|%))(\s+(auto|0|\d+(\.\d+)?(px|pt|em|rem|%))){0,3}$/i,

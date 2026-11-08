@@ -180,6 +180,7 @@ body {
 }
 
 #div_text {
+  text-align: left;
   background: var(--content_text_background_color);
   color: var(--content_text_color);
   font-family: var(--font_body, fontContentText);
@@ -187,6 +188,15 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+/* Красная строка обычного текста и абзацев; вложенное оформление может её изменить. */
+#div_text_lines {
+  text-indent: 1.5em;
+}
+
+#div_text_lines :where(h1, h2, h3, h4, h5, h6, ul, ol, dl, table, pre, blockquote) {
+  text-indent: 0;
 }
 
 .content_birthdays_date {

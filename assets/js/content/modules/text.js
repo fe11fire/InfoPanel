@@ -30,7 +30,7 @@ class Text {
                     // перенос строки, а как отдельный flex-элемент.
                     $('<div></div>')
                         .attr('id', 'div_text_lines')
-                        .addClass('w-100 text-center')
+                        .addClass('w-100')
                 )
         );
         // Нужен весь срок показа, а не только сразу после show(): доступное место
