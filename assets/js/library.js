@@ -25,7 +25,11 @@ class Library {
     // содержимое сохраняется, чтобы текст не пропадал из-за лишней разметки.
     static #allowedTags = {
         B: 1, STRONG: 1, I: 1, EM: 1, U: 1, S: 1, SPAN: 1, BR: 1,
-        SUB: 1, SUP: 1, SMALL: 1, BIG: 1, FONT: 1
+        SUB: 1, SUP: 1, SMALL: 1, BIG: 1, FONT: 1,
+        P: 1, DIV: 1, H1: 1, H2: 1, H3: 1, H4: 1, H5: 1, H6: 1,
+        UL: 1, OL: 1, LI: 1, DL: 1, DT: 1, DD: 1, BLOCKQUOTE: 1,
+        PRE: 1, CODE: 1, HR: 1, MARK: 1, ABBR: 1, Q: 1,
+        TABLE: 1, CAPTION: 1, THEAD: 1, TBODY: 1, TFOOT: 1, TR: 1, TH: 1, TD: 1
     };
 
     // Теги, которые отбрасываются вместе с содержимым.
@@ -41,7 +45,22 @@ class Library {
         'text-decoration': /^(none|underline|overline|line-through)$/i,
         'font-size': /^\d+(\.\d+)?(px|pt|em|rem|%)$/i,
         'text-transform': /^(none|uppercase|lowercase|capitalize)$/i,
-        'letter-spacing': /^-?\d+(\.\d+)?(px|pt|em|rem)$/i
+        'letter-spacing': /^-?\d+(\.\d+)?(px|pt|em|rem)$/i,
+        'text-align': /^(left|right|center|justify|start|end)$/i,
+        'vertical-align': /^(baseline|top|middle|bottom|sub|super|text-top|text-bottom)$/i,
+        'line-height': /^(normal|\d+(\.\d+)?(px|pt|em|rem|%)?)$/i,
+        'margin': /^(auto|0|\d+(\.\d+)?(px|pt|em|rem|%))(\s+(auto|0|\d+(\.\d+)?(px|pt|em|rem|%))){0,3}$/i,
+        'padding': /^(0|\d+(\.\d+)?(px|pt|em|rem|%))(\s+(0|\d+(\.\d+)?(px|pt|em|rem|%))){0,3}$/i,
+        'margin-top': /^(auto|0|\d+(\.\d+)?(px|pt|em|rem|%))$/i,
+        'margin-right': /^(auto|0|\d+(\.\d+)?(px|pt|em|rem|%))$/i,
+        'margin-bottom': /^(auto|0|\d+(\.\d+)?(px|pt|em|rem|%))$/i,
+        'margin-left': /^(auto|0|\d+(\.\d+)?(px|pt|em|rem|%))$/i,
+        'padding-top': /^(0|\d+(\.\d+)?(px|pt|em|rem|%))$/i,
+        'padding-right': /^(0|\d+(\.\d+)?(px|pt|em|rem|%))$/i,
+        'padding-bottom': /^(0|\d+(\.\d+)?(px|pt|em|rem|%))$/i,
+        'padding-left': /^(0|\d+(\.\d+)?(px|pt|em|rem|%))$/i,
+        'list-style-type': /^(none|disc|circle|square|decimal|lower-alpha|upper-alpha|lower-roman|upper-roman)$/i,
+        'border-collapse': /^(collapse|separate)$/i
     };
 
     // Содержимое content и config никогда не попадает в .html(): jQuery исполняет
@@ -75,9 +94,30 @@ class Library {
             if (cssClass) {
                 el.setAttribute('class', cssClass);
             }
+            const align = node.getAttribute('align');
+            if (align && /^(left|right|center|justify)$/i.test(align)) {
+                el.style.textAlign = align.toLowerCase();
+            }
+            for (const attr of ['colspan', 'rowspan']) {
+                const value = node.getAttribute(attr);
+                if (['TD', 'TH'].includes(node.tagName) && value && /^[1-9]\d{0,2}$/.test(value)) {
+                    el.setAttribute(attr, value);
+                }
+            }
+            if (node.tagName === 'OL' && /^-?\d{1,6}$/.test(node.getAttribute('start') || '')) {
+                el.setAttribute('start', node.getAttribute('start'));
+            }
+            if (node.tagName === 'FONT') {
+                const color = node.getAttribute('color');
+                if (color && Library.#allowedStyle.color.test(color)) el.setAttribute('color', color);
+                const size = node.getAttribute('size');
+                if (size && /^[+-]?[1-7]$/.test(size)) el.setAttribute('size', size);
+                const face = node.getAttribute('face');
+                if (face && /^[\w\s,'-]+$/.test(face)) el.setAttribute('face', face);
+            }
             let style = Library.#cleanStyle(node.getAttribute('style'));
             if (style) {
-                el.setAttribute('style', style);
+                el.style.cssText += '; ' + style;
             }
             el.appendChild(Library.#rebuild(node));
             out.appendChild(el);
@@ -106,12 +146,10 @@ class Library {
 
     static setLines(target, lines) {
         let el = $(target).empty();
-        lines.forEach((line, i) => {
-            if (i > 0) {
-                el.append($('<br>'));
-            }
-            el.append(Library.markup(line));
-        });
+        // Блочная HTML-разметка разбирается целиком: теги могут открываться
+        // и закрываться на разных строках. У обычного текста сохраняем переносы.
+        const blockMarkup = lines.some(line => /<\/?(?:p|div|h[1-6]|ul|ol|li|dl|dt|dd|blockquote|pre|table|caption|thead|tbody|tfoot|tr|th|td|hr)\b/i.test(line));
+        el.append(Library.markup(lines.join(blockMarkup ? '\n' : '<br>')));
         return el;
     }
 

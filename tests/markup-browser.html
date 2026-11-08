@@ -1,0 +1,40 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Проверка оформления текстового контента</title>
+<script src="../node_modules/jquery/dist/jquery.min.js"></script>
+<script src="../assets/js/library.js"></script>
+<pre id="result">RUNNING</pre>
+<div id="fixture"></div>
+<script>
+try {
+    const check = (condition, message) => { if (!condition) throw new Error(message); };
+    Library.setLines('#fixture', [
+        '<div align="right" style="color: red; padding: 1em; text-align: left" onclick="alert(1)">',
+        '<h2>Заголовок</h2><p align="center" style="margin: 0; line-height: 1.4">Абзац <b>текст</b></p>',
+        '<ol start="3"><li>Первый</li><li>Второй</li></ol>',
+        '<table><tr><td colspan="2">Ячейка</td></tr></table>',
+        '<font color="blue" size="4" face="Arial">Шрифт</font>',
+        '<scr' + 'ipt>window.markupExecuted=true;</scr' + 'ipt>',
+        '<style>body{display:none}</style><img src="missing" onerror="alert(1)">',
+        '<span style="position:fixed; background-image:url(https://example.com/x); color:green">Безопасный стиль</span>',
+        '</div>'
+    ]);
+    const fixture = document.querySelector('#fixture');
+    const wrapper = fixture.firstElementChild;
+    check(wrapper.querySelector('p b')?.textContent === 'текст', 'multiline nesting');
+    check(wrapper.style.textAlign === 'left', 'inline style overrides legacy align');
+    check(wrapper.querySelector('p').style.textAlign === 'center', 'legacy align preserved');
+    check(wrapper.style.padding === '1em', 'spacing preserved');
+    check(wrapper.querySelector('ol').getAttribute('start') === '3', 'list attributes');
+    check(wrapper.querySelector('td').colSpan === 2, 'table attributes');
+    check(wrapper.querySelector('font').getAttribute('color') === 'blue', 'font attributes');
+    check(!fixture.querySelector('script,style,img'), 'active elements removed');
+    check(!fixture.querySelector('[onclick],[onerror]') && !window.markupExecuted, 'handlers removed');
+    check(!wrapper.querySelector('span').style.position && !wrapper.querySelector('span').style.backgroundImage, 'unapproved styles removed');
+    Library.setLines('#fixture', ['Строка 1', '<b>Строка 2</b>']);
+    check(fixture.querySelectorAll('br').length === 1, 'plain text line breaks preserved');
+    document.querySelector('#result').textContent = 'PASS: paragraphs, alignment, lists, tables, multiline HTML, legacy font, plain text and filtering';
+} catch (error) {
+    document.querySelector('#result').textContent = 'FAIL: ' + error.message;
+}
+</script>
