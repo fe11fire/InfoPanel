@@ -3,6 +3,7 @@ class Text {
     static url = Default.backend_url + this.name;
     static request_data = {};
     static prehash = this.name;
+    static fitGap = 20; // Запас сверху и снизу при подборе размера текста, px
 
     #name = '';
     constructor(name) {
@@ -46,14 +47,14 @@ class Text {
         do {
             div.style.fontSize = size + 'px';
             size--;
-        } while (Library.overflows(div) && size > 12);
+        } while (Library.overflows(div, Text.fitGap) && size > 12);
     }
 
     // Шаг секундного сторожа: только уменьшить, если действительно переполнено,
     // без сброса к максимальному размеру - иначе на каждой проверке был бы виден
     // скачок обратно к большому кеглю перед новым уменьшением.
     static #shrinkIfNeeded(div) {
-        if (!Library.overflows(div)) {
+        if (!Library.overflows(div, Text.fitGap)) {
             return;
         }
         let size = parseInt(div.style.fontSize, 10);
