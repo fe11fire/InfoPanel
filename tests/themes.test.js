@@ -12,7 +12,7 @@ function setup() {
         setTimeout: callback => { const id = Symbol(); timers.set(id, callback); return id; },
         clearTimeout: id => timers.delete(id),
         getComputedStyle: () => ({ getPropertyValue: key => inline.get(key) ||
-            (key === '--background_color' ? (root.dataset.theme === 'minimal' ? '#fff' : '#08184f') : '76px') }),
+            (key === '--background_color' ? (root.dataset.theme === 'minimal' ? '#fff' : root.dataset.theme === 'hi-tech' ? '#07121c' : '#08184f') : '76px') }),
         document: {
             documentElement: root,
             createElement: () => ({ media: '', remove() { this.removed = true; } }),
@@ -28,7 +28,7 @@ test('theme switches after CSS loads and snapshots values without old JSON overr
     let ready = x.themes.apply('classic'); x.links[0].onload(); await ready;
     x.inline.set('--background_color', '#f00');
     ready = x.themes.apply('minimal');
-    assert.equal(x.themes.active, 'classic'); assert.equal(x.links[1].media, 'not all');
+    assert.equal(x.themes.active, 'classic'); assert.equal(x.links[1].media, 'all');
     x.links[1].onload(); await ready;
     assert.equal(x.themes.active, 'minimal'); assert.equal(x.themes.values.background_color, '#fff');
     assert.equal(x.links[0].removed, true); assert.equal(x.timers.size, 0);
@@ -61,4 +61,14 @@ test('theme names cannot escape their folder', async () => {
     await x.themes.apply('../outside');
     assert.equal(x.links.length, 0); assert.equal(x.themes.active, 'classic');
     assert.equal(x.reports.length, 1);
+});
+
+// Chrome 109 may finish loading an inactive sheet before its rules are ready.
+test('hi-tech loads with active media and captures its own background', async () => {
+    const x = setup();
+    const ready = x.themes.apply('hi-tech');
+    assert.equal(x.links[0].media, 'all');
+    x.links[0].onload();
+    await ready;
+    assert.equal(x.themes.values.background_color, '#07121c');
 });

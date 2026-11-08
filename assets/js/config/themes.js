@@ -35,8 +35,9 @@ class Themes {
             link?.remove();
             return;
         }
-        // Новый CSS загружается неактивным. Старый остается до завершения загрузки.
-        if (link) link.media = 'all';
+        // CSS загружается с активным media: Chrome 109 может сообщать load для
+        // media="not all" до готовности правил к чтению через getComputedStyle.
+        // Старый файл сохраняется до успешной загрузки нового.
         this.#link?.remove();
         this.#link = link;
         const root = document.documentElement;
@@ -53,7 +54,7 @@ class Themes {
         return new Promise((resolve, reject) => {
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.media = 'not all';
+            link.media = 'all';
             link.href = 'assets/themes/' + name + '/theme.css';
             let timer;
             const finish = error => {
