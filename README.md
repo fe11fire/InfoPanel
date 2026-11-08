@@ -45,7 +45,6 @@ flowchart TB
     end
     Core -->|"HTTP / JSON"| API["Go · net/http"]
     API --> Storage["Файлы · JSON · UTF-8"]
-    Build["npm · esbuild"] -.->|"Подготовка библиотек и PDF-движка"| Client
 ```
 
 | Слой | Технологии | Назначение |
@@ -55,9 +54,9 @@ flowchart TB
 | Медиа | Plyr, Swiper, PDF.js, Moment.js | Видео, слайды, страницы PDF и календарные расчеты |
 | Backend | Go, стандартная библиотека `net/http`, `io/fs`, `os` | HTTP API, чтение JSON и файлов, выдача PDF |
 | Хранение | Файловая система, JSON, текстовые файлы | Контент и настройки без базы данных |
-| Разработка | npm lock-файл, esbuild, Node.js Test Runner, Go testing | Зависимости, сборка PDF-движка и проверки |
+| Разработка | npm lock-файл, Node.js Test Runner, Go testing | Зависимости и проверки |
 
-Готовые библиотеки поставляются в `node_modules.rar`, сервер и PDF-движок включены в проект. Node.js и Go нужны только для разработки и пересборки.
+Готовые библиотеки поставляются в `node_modules.rar`, сервер и PDF-движок включены в проект. PDF-движок собран на базе PDF.js 6.5.438. Node.js и Go нужны только для разработки.
 
 ### Архитектурные решения
 
